@@ -83,9 +83,42 @@ async function loadAlbumDetails() {
             return;
         }
 
+        // Récupérer le pseudo du propriétaire à partir de la table profiles
+        let ownerPseudo = 'Utilisateur inconnu';
+        if (album.created_by) {
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('pseudo')
+                .eq('id', album.created_by)
+                .single();
+
+            if (!profileError && profile) {
+                ownerPseudo = profile.pseudo;
+            }
+        }
+
         // Mettre à jour les détails de l'album dans la page
         document.getElementById('albumTitle').textContent = album.title;
-        document.getElementById('albumDescription').textContent = album.description || '';
+
+        // Mise à jour de la description pour inclure le propriétaire
+        const descriptionEl = document.getElementById('albumDescription');
+
+        // Créer un élément pour le propriétaire
+        const ownerEl = document.createElement('div');
+        ownerEl.className = 'album-owner';
+        ownerEl.textContent = `Par ${ownerPseudo}`;
+
+        // Ajouter la description si elle existe
+        if (album.description) {
+            descriptionEl.textContent = album.description;
+        } else {
+            descriptionEl.textContent = '';
+        }
+
+        // Ajouter l'information du propriétaire après la description
+        descriptionEl.appendChild(document.createElement('br'));
+        descriptionEl.appendChild(ownerEl);
+
         document.title = `${album.title} | Ma Galerie Photo`;
 
         // Stocker l'album courant

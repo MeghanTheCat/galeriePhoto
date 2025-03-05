@@ -192,18 +192,34 @@ header {
     width: 100%;
 }
 
-.album-info {
-    padding: 1rem;
+.album-owner {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
 }
 
-.album-title {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
+.album-owner::before {
+    content: "\1F464";
+    margin-right: 0.3rem;
+}
+
+.album-info {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
 }
 
 .album-stats {
     font-size: 0.9rem;
     color: #777;
+}
+
+.album-title {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
 }
 
 .cover-preview {

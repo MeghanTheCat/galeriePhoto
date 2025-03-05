@@ -68,6 +68,7 @@ async function handleRegister(event) {
 
     // Récupérer les valeurs du formulaire
     const email = document.getElementById('registerEmail').value;
+    const pseudo = document.getElementById('registerPseudo').value;
     const password = document.getElementById('registerPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
     const registerBtn = document.querySelector('.register-submit');
@@ -88,21 +89,57 @@ async function handleRegister(event) {
         return;
     }
 
+    // Vérifier la longueur du pseudo
+    if (pseudo.length < 3) {
+        errorElement.textContent = 'Le pseudo doit contenir au moins 3 caractères';
+        errorElement.style.display = 'block';
+        return;
+    }
+
     registerBtn.textContent = 'Création en cours...';
     registerBtn.disabled = true;
     errorElement.style.display = 'none';
 
     try {
-        // Créer l'utilisateur dans Supabase
+        // Étape 1: Créer l'utilisateur dans Supabase Auth
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+                data: {
+                    pseudo: pseudo // Ajouter le pseudo aux métadonnées de l'utilisateur
+                }
+            }
         });
 
         if (error) throw error;
 
         // Vérifier si l'inscription a réussi
         if (data.user) {
+            // Étape 2: Si nécessaire, insérer des données supplémentaires dans votre table profiles
+            // Si vous avez une table profiles distincte, vous pouvez y insérer des données ici
+            try {
+                const { error: profileError } = await supabase
+                    .from('profiles') // Remplacez par le nom de votre table si différent
+                    .insert([
+                        {
+                            id: data.user.id, // utilise l'UUID de l'utilisateur comme ID de profil
+                            pseudo: pseudo,
+                            email: email,
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (profileError) {
+                    console.error('Erreur lors de la création du profil:', profileError);
+                    // On continue malgré cette erreur secondaire
+                }
+            } catch (profileInsertError) {
+                console.error('Exception lors de la création du profil:', profileInsertError);
+                // On continue malgré cette erreur secondaire
+            }
+
             // Fermer le modal d'inscription
             closeRegisterModal();
 
@@ -174,13 +211,40 @@ async function loadAlbums() {
         // Masquer le bouton "Nouvel Album" si l'utilisateur n'est pas connecté
         document.getElementById('openModalBtn').style.display = currentUser ? 'block' : 'none';
 
-        // Récupérer les albums depuis Supabase
+        // 1. D'abord, récupérer tous les albums
         const { data: albums, error } = await supabase
             .from('albums')
             .select('*')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
+
+        // 2. Si nous avons des albums, récupérer les profils des propriétaires
+        if (albums && albums.length > 0) {
+            // Collecter tous les IDs des propriétaires d'albums
+            const ownerIds = [...new Set(albums.map(album => album.created_by))];
+
+            // Récupérer les profils correspondants
+            const { data: profiles, error: profilesError } = await supabase
+                .from('profiles')
+                .select('id, pseudo')
+                .in('id', ownerIds);
+
+            if (profilesError) {
+                console.warn('Erreur lors de la récupération des pseudos:', profilesError);
+            } else if (profiles) {
+                // Créer un dictionnaire pour recherche rapide: ID -> pseudo
+                const profileMap = {};
+                profiles.forEach(profile => {
+                    profileMap[profile.id] = profile.pseudo;
+                });
+
+                // Ajouter le pseudo à chaque album
+                albums.forEach(album => {
+                    album.ownerPseudo = profileMap[album.created_by] || 'Utilisateur inconnu';
+                });
+            }
+        }
 
         const albumsGrid = document.getElementById('albumsGrid');
         // Vider la grille existante
@@ -213,8 +277,11 @@ async function loadAlbums() {
 
                 const coverUrl = album.cover_image_url || '/assets/placeholder-album.jpg';
 
+                // Récupérer le pseudo du propriétaire
+                const ownerPseudo = album.ownerPseudo || 'Utilisateur inconnu';
+
                 // Inclure le bouton de suppression uniquement si l'utilisateur est connecté
-                const deleteButton = currentUser ?
+                const deleteButton = currentUser && currentUser.id === album.created_by ?
                     `<button class="delete-album-btn" data-id="${album.id}" title="Supprimer cet album">
                         <span>&times;</span>
                     </button>` : '';
@@ -227,6 +294,7 @@ async function loadAlbums() {
                     <div class="album-info">
                         <h3 class="album-title">${album.title}</h3>
                         <p class="album-stats">${album.photo_count || 0} photos · Créé le ${new Date(album.created_at).toLocaleDateString()}</p>
+                        <p class="album-owner">Par ${ownerPseudo}</p>
                     </div>
                 `;
 
@@ -239,7 +307,7 @@ async function loadAlbums() {
                 });
 
                 // Ajouter un gestionnaire spécifique pour le bouton de suppression si l'utilisateur est connecté
-                if (currentUser) {
+                if (currentUser && currentUser.id === album.created_by) {
                     const deleteBtn = albumCard.querySelector('.delete-album-btn');
                     if (deleteBtn) {
                         deleteBtn.addEventListener('click', (event) => {
