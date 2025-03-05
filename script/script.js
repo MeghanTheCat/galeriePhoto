@@ -171,21 +171,8 @@ async function loadAlbums() {
             document.querySelector('.container').appendChild(loading);
         }
 
-        // Si non connecté, afficher message approprié
-        if (!currentUser) {
-            const albumsGrid = document.getElementById('albumsGrid');
-            albumsGrid.innerHTML = `
-                <div class="no-albums">
-                    <p>Veuillez vous connecter pour voir vos albums.</p>
-                </div>
-            `;
-            loading.style.display = 'none';
-            albumsGrid.style.display = 'block';
-            document.getElementById('openModalBtn').style.display = 'none';
-            return;
-        } else {
-            document.getElementById('openModalBtn').style.display = 'block';
-        }
+        // Masquer le bouton "Nouvel Album" si l'utilisateur n'est pas connecté
+        document.getElementById('openModalBtn').style.display = currentUser ? 'block' : 'none';
 
         // Récupérer les albums depuis Supabase
         const { data: albums, error } = await supabase
@@ -202,12 +189,21 @@ async function loadAlbums() {
         if (albums.length === 0) {
             const noAlbums = document.createElement('div');
             noAlbums.className = 'no-albums';
-            noAlbums.innerHTML = `
-                <p>Vous n'avez pas encore créé d'albums.</p>
-                <button class="add-album-btn" id="createFirstAlbumBtn">Créer mon premier album</button>
-            `;
-            albumsGrid.appendChild(noAlbums);
-            document.getElementById('createFirstAlbumBtn').addEventListener('click', openModal);
+
+            // Message différent si l'utilisateur est connecté ou non
+            if (currentUser) {
+                noAlbums.innerHTML = `
+                    <p>Vous n'avez pas encore créé d'albums.</p>
+                    <button class="add-album-btn" id="createFirstAlbumBtn">Créer mon premier album</button>
+                `;
+                albumsGrid.appendChild(noAlbums);
+                document.getElementById('createFirstAlbumBtn').addEventListener('click', openModal);
+            } else {
+                noAlbums.innerHTML = `
+                    <p>Aucun album n'est disponible pour le moment.</p>
+                `;
+                albumsGrid.appendChild(noAlbums);
+            }
         } else {
             // Afficher chaque album
             albums.forEach(album => {
@@ -217,12 +213,16 @@ async function loadAlbums() {
 
                 const coverUrl = album.cover_image_url || '/assets/placeholder-album.jpg';
 
+                // Inclure le bouton de suppression uniquement si l'utilisateur est connecté
+                const deleteButton = currentUser ?
+                    `<button class="delete-album-btn" data-id="${album.id}" title="Supprimer cet album">
+                        <span>&times;</span>
+                    </button>` : '';
+
                 albumCard.innerHTML = `
                     <div class="album-thumbnail">
                         <img src="${coverUrl}" alt="${album.title}">
-                        <button class="delete-album-btn" data-id="${album.id}" title="Supprimer cet album">
-                            <span>&times;</span>
-                        </button>
+                        ${deleteButton}
                     </div>
                     <div class="album-info">
                         <h3 class="album-title">${album.title}</h3>
@@ -238,12 +238,16 @@ async function loadAlbums() {
                     }
                 });
 
-                // Ajouter un gestionnaire spécifique pour le bouton de suppression
-                const deleteBtn = albumCard.querySelector('.delete-album-btn');
-                deleteBtn.addEventListener('click', (event) => {
-                    event.stopPropagation(); // Empêcher la propagation de l'événement (ne pas ouvrir l'album)
-                    deleteAlbum(album);
-                });
+                // Ajouter un gestionnaire spécifique pour le bouton de suppression si l'utilisateur est connecté
+                if (currentUser) {
+                    const deleteBtn = albumCard.querySelector('.delete-album-btn');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', (event) => {
+                            event.stopPropagation(); // Empêcher la propagation de l'événement (ne pas ouvrir l'album)
+                            deleteAlbum(album);
+                        });
+                    }
+                }
 
                 albumsGrid.appendChild(albumCard);
             });

@@ -23,7 +23,7 @@
 
     <!-- Contenu principal -->
     <div class="container">
-        <h2 class="section-title">Mes Albums</h2>
+        <h2 class="section-title">Albums Photo</h2>
 
         <!-- Indicateur de chargement -->
         <div id="loading" class="loading">
@@ -32,12 +32,9 @@
 
         <!-- Grille d'albums (à remplir dynamiquement) -->
         <div class="albums-grid" id="albumsGrid" style="display: none;">
-            <!-- Message affiché lorsqu'il n'y a pas d'albums -->
-            <div class="no-albums" id="noAlbums" style="display: none;">
-                <p>Vous n'avez pas encore créé d'albums.</p>
-                <button class="add-album-btn" id="createFirstAlbumBtn">Créer mon premier album</button>
-            </div>
+            <!-- Le message concernant l'absence d'albums est maintenant géré dynamiquement dans script.js -->
         </div>
+    </div>
     </div>
 
     <!-- Modal pour ajouter un album -->

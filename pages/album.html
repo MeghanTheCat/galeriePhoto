@@ -35,17 +35,16 @@
             Chargement des photos...
         </div>
 
-        <!-- Bouton pour ajouter des photos -->
+        <!-- Bouton pour ajouter des photos - masqué par défaut -->
         <div class="add-photo-section">
-            <button class="add-photo-btn" id="addPhotoBtn">+ Ajouter des photos</button>
+            <button class="add-photo-btn" id="addPhotoBtn" style="display: none;">+ Ajouter des photos</button>
         </div>
 
         <!-- Grille de photos (à remplir dynamiquement) -->
         <div class="photos-grid" id="photosGrid" style="display: none;">
-            <!-- Message affiché lorsqu'il n'y a pas de photos -->
+            <!-- Message affiché lorsqu'il n'y a pas de photos - contenu dynamique -->
             <div class="no-photos" id="noPhotos" style="display: none;">
-                <p>Cet album ne contient pas encore de photos.</p>
-                <button class="add-photo-btn" id="addFirstPhotoBtn">Ajouter ma première photo</button>
+                <!-- Le contenu sera rempli dynamiquement selon l'état d'authentification -->
             </div>
         </div>
     </div>

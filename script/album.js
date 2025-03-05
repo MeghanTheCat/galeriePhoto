@@ -25,15 +25,26 @@ async function checkAuth() {
             <button id="logoutBtn" class="logout-btn">Déconnexion</button>
         `;
         document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+        // Montrer le bouton d'ajout de photos uniquement aux utilisateurs connectés
+        document.querySelectorAll('.add-photo-btn').forEach(btn => {
+            btn.style.display = 'inline-block';
+        });
+
         return true;
     } else {
         document.querySelector('.user-section').innerHTML = `
             <button id="loginBtn" class="login-btn">Connexion</button>
             <button id="registerBtn" class="register-btn">Inscription</button>
         `;
-        // Rediriger vers la page d'accueil si non connecté
-        alert('Veuillez vous connecter pour accéder à cet album.');
-        window.location.href = '../index.html';
+        document.getElementById('loginBtn').addEventListener('click', () => window.location.href = '../index.html');
+        document.getElementById('registerBtn').addEventListener('click', () => window.location.href = '../index.html');
+
+        // Cacher le bouton d'ajout de photos pour les visiteurs non connectés
+        document.querySelectorAll('.add-photo-btn').forEach(btn => {
+            btn.style.display = 'none';
+        });
+
         return false;
     }
 }
@@ -77,14 +88,6 @@ async function loadAlbumDetails() {
             return;
         }
 
-        // Vérifier si l'utilisateur actuel est le propriétaire de l'album
-        // Si vous voulez implémenter cette vérification
-        // if (album.created_by !== currentUser.id) {
-        //     alert('Vous n\'avez pas accès à cet album.');
-        //     window.location.href = '../index.html';
-        //     return;
-        // }
-
         // Mettre à jour les détails de l'album dans la page
         document.getElementById('albumTitle').textContent = album.title;
         document.getElementById('albumDescription').textContent = album.description || '';
@@ -94,7 +97,9 @@ async function loadAlbumDetails() {
         currentAlbum = album;
 
         // Mettre à jour le compteur de photos pour s'assurer qu'il est correct
-        await updatePhotoCount();
+        if (currentUser) {
+            await updatePhotoCount();
+        }
 
         // Charger les photos de l'album
         loadPhotos();
@@ -137,10 +142,21 @@ async function loadPhotos() {
             if (noPhotosElement) {
                 noPhotosElement.style.display = 'block';
 
-                // Vérifier si le bouton existe avant d'ajouter l'écouteur d'événement
-                const addFirstPhotoBtn = document.getElementById('addFirstPhotoBtn');
-                if (addFirstPhotoBtn) {
-                    addFirstPhotoBtn.addEventListener('click', openPhotoModal);
+                // Adapter le message selon que l'utilisateur est connecté ou non
+                if (currentUser) {
+                    noPhotosElement.innerHTML = `
+                        <p>Cet album ne contient pas encore de photos.</p>
+                        <button class="add-photo-btn" id="addFirstPhotoBtn">Ajouter ma première photo</button>
+                    `;
+                    // Vérifier si le bouton existe avant d'ajouter l'écouteur d'événement
+                    const addFirstPhotoBtn = document.getElementById('addFirstPhotoBtn');
+                    if (addFirstPhotoBtn) {
+                        addFirstPhotoBtn.addEventListener('click', openPhotoModal);
+                    }
+                } else {
+                    noPhotosElement.innerHTML = `
+                        <p>Cet album ne contient pas encore de photos.</p>
+                    `;
                 }
             }
         } else {
@@ -150,7 +166,6 @@ async function loadPhotos() {
             }
 
             // Afficher chaque photo
-            // À l'intérieur de la fonction loadPhotos, dans la partie traitement des photos
             photos.forEach(photo => {
                 const photoCard = document.createElement('div');
                 photoCard.className = 'photo-card';
@@ -172,12 +187,12 @@ async function loadPhotos() {
                 }
 
                 photoCard.innerHTML = `
-        <div class="photo-thumbnail">
-            <img src="${publicUrl}" alt="${photo.title || 'Photo'}" 
-                onerror="this.onerror=null; this.src='/path/to/fallback-image.jpg'; console.error('Impossible de charger:', this.alt);">
-        </div>
-        ${photo.title ? `<div class="photo-title">${photo.title}</div>` : ''}
-    `;
+                    <div class="photo-thumbnail">
+                        <img src="${publicUrl}" alt="${photo.title || 'Photo'}" 
+                            onerror="this.onerror=null; this.src='/path/to/fallback-image.jpg'; console.error('Impossible de charger:', this.alt);">
+                    </div>
+                    ${photo.title ? `<div class="photo-title">${photo.title}</div>` : ''}
+                `;
 
                 // Ouvrir la photo en grand au clic
                 photoCard.addEventListener('click', () => openPhotoViewer(photo, publicUrl));
@@ -447,9 +462,14 @@ function openPhotoViewer(photo, publicUrl) {
         }
     }
 
-    // Configuration du bouton de suppression
+    // Configuration du bouton de suppression - seulement pour utilisateurs connectés
     if (deleteBtn) {
-        deleteBtn.onclick = () => deletePhoto(photo);
+        if (currentUser) {
+            deleteBtn.style.display = 'block';
+            deleteBtn.onclick = () => deletePhoto(photo);
+        } else {
+            deleteBtn.style.display = 'none';
+        }
     }
 
     modal.classList.add('modal-visible');
@@ -463,24 +483,25 @@ function closePhotoViewer() {
 // Initialisation 
 document.addEventListener('DOMContentLoaded', async () => {
     const isLoggedIn = await checkAuth();
-    if (isLoggedIn) {
-        await loadAlbumDetails();
-    }
+    await loadAlbumDetails(); // Charger les détails que l'utilisateur soit connecté ou non
 
     // Configuration des gestionnaires d'événements
     document.getElementById('backBtn').addEventListener('click', () => {
         window.location.href = '../index.html';
     });
 
-    document.getElementById('addPhotoBtn').addEventListener('click', openPhotoModal);
-    document.getElementById('closeModalBtn').addEventListener('click', closePhotoModal);
-    document.getElementById('photoForm').addEventListener('submit', addPhoto);
-    document.getElementById('photoFile').addEventListener('change', previewPhoto);
+    // Configuration des boutons uniquement si l'utilisateur est connecté
+    if (isLoggedIn) {
+        document.getElementById('addPhotoBtn').addEventListener('click', openPhotoModal);
+        document.getElementById('closeModalBtn').addEventListener('click', closePhotoModal);
+        document.getElementById('photoForm').addEventListener('submit', addPhoto);
+        document.getElementById('photoFile').addEventListener('change', previewPhoto);
+    }
 
     document.getElementById('closeViewModalBtn').addEventListener('click', closePhotoViewer);
 
     // Fermer modals si clic en dehors
-    document.getElementById('photoModal').addEventListener('click', function (event) {
+    document.getElementById('photoModal')?.addEventListener('click', function (event) {
         if (event.target === this) closePhotoModal();
     });
 
