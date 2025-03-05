@@ -180,6 +180,28 @@
     margin-top: 0.5rem;
 }
 
+.photo-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
 /* Responsive pour la page d'album */
 @media (max-width: 768px) {
     .photos-grid {

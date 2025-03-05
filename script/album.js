@@ -93,6 +93,9 @@ async function loadAlbumDetails() {
         // Stocker l'album courant
         currentAlbum = album;
 
+        // Mettre à jour le compteur de photos pour s'assurer qu'il est correct
+        await updatePhotoCount();
+
         // Charger les photos de l'album
         loadPhotos();
     } catch (error) {
@@ -195,6 +198,82 @@ async function loadPhotos() {
     }
 }
 
+// Fonction pour mettre à jour le compteur de photos de l'album
+async function updatePhotoCount() {
+    try {
+        // Récupérer le nombre réel de photos dans l'album
+        const { count, error } = await supabase
+            .from('photos')
+            .select('id', { count: 'exact' })
+            .eq('album_id', currentAlbumId);
+
+        if (error) throw error;
+
+        // Mettre à jour le compteur dans la table albums
+        const { error: updateError } = await supabase
+            .from('albums')
+            .update({
+                photo_count: count,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', currentAlbumId);
+
+        if (updateError) throw updateError;
+
+        // Mettre à jour l'objet currentAlbum localement
+        if (currentAlbum) {
+            currentAlbum.photo_count = count;
+        }
+
+        console.log(`Compteur de photos mis à jour: ${count} photos`);
+
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour du compteur de photos:', error);
+    }
+}
+
+// Fonction pour supprimer une photo
+async function deletePhoto(photo) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette photo ?')) {
+        return;
+    }
+
+    try {
+        // Supprimer le fichier du storage
+        const { error: storageError } = await supabase.storage
+            .from('photos')
+            .remove([photo.storage_path]);
+
+        if (storageError) {
+            console.error('Erreur lors de la suppression du fichier:', storageError);
+            // Continuer malgré l'erreur de suppression du fichier
+            // pour au moins supprimer l'entrée de la base de données
+        }
+
+        // Supprimer l'entrée de la base de données
+        const { error: dbError } = await supabase
+            .from('photos')
+            .delete()
+            .eq('id', photo.id);
+
+        if (dbError) throw dbError;
+
+        // Mettre à jour le compteur de photos
+        await updatePhotoCount();
+
+        // Fermer la visionneuse si elle est ouverte
+        closePhotoViewer();
+
+        // Recharger les photos pour mettre à jour l'affichage
+        await loadPhotos();
+
+        console.log('Photo supprimée avec succès');
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la photo:', error);
+        alert('Une erreur est survenue lors de la suppression de la photo.');
+    }
+}
+
 // Ouvrir la modal d'ajout de photo
 function openPhotoModal() {
     document.getElementById('photoModal').classList.add('modal-visible');
@@ -285,21 +364,25 @@ async function addPhoto(event) {
 
         if (insertError) throw insertError;
 
-        // Mettre à jour le compteur de photos de l'album et éventuellement l'image de couverture
-        const { error: updateError } = await supabase
-            .from('albums')
-            .update({
-                photo_count: (currentAlbum.photo_count || 0) + 1,
-                updated_at: currentTimestamp,
-                cover_image_url: currentAlbum.photo_count === 0 ? publicUrl : currentAlbum.cover_image_url
-            })
-            .eq('id', currentAlbumId);
+        // Mettre à jour le compteur de photos en comptant le nombre réel de photos
+        await updatePhotoCount();
 
-        if (updateError) throw updateError;
+        // Si c'est la première photo, définir comme image de couverture
+        if (currentAlbum && currentAlbum.photo_count === 1 && !currentAlbum.cover_image_url) {
+            const { error: updateError } = await supabase
+                .from('albums')
+                .update({
+                    cover_image_url: publicUrl,
+                    updated_at: currentTimestamp
+                })
+                .eq('id', currentAlbumId);
+
+            if (updateError) console.error('Erreur lors de la mise à jour de l\'image de couverture:', updateError);
+        }
 
         // Fermer la modal et recharger les photos
         closePhotoModal();
-        await loadAlbumDetails(); // Recharger l'album pour avoir le compteur à jour
+        await loadPhotos(); // Recharger uniquement les photos au lieu de l'album complet
     } catch (error) {
         console.error('Erreur lors de l\'ajout de la photo:', error);
         alert('Une erreur est survenue lors de l\'ajout de la photo.');
@@ -318,6 +401,7 @@ function openPhotoViewer(photo, publicUrl) {
     const photoImg = document.getElementById('currentPhoto');
     const photoTitle = document.getElementById('photoViewTitle');
     const photoDescription = document.getElementById('photoViewDescription');
+    const deleteBtn = document.getElementById('deletePhotoBtn');
 
     if (!modal || !photoImg) {
         console.error("Éléments du visualiseur manquants");
@@ -361,6 +445,11 @@ function openPhotoViewer(photo, publicUrl) {
         } else {
             photoDescription.style.display = 'none';
         }
+    }
+
+    // Configuration du bouton de suppression
+    if (deleteBtn) {
+        deleteBtn.onclick = () => deletePhoto(photo);
     }
 
     modal.classList.add('modal-visible');
