@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma galerie photo</title>
+    <link rel="stylesheet" href="./style/style.css">
+    <script src="./script/script.js" defer></script>
+</head>
+
+<body>
+    <!-- En-tête de la page -->
+    <header>
+        <div class="logo">Ma Galerie Photo</div>
+        <button class="add-album-btn" id="openModalBtn">+ Nouvel Album</button>
+    </header>
+
+    <!-- Contenu principal -->
+    <div class="container">
+        <h2 class="section-title">Mes Albums</h2>
+
+        <!-- Grille d'albums (à remplir dynamiquement) -->
+        <div class="albums-grid" id="albumsGrid">
+            <!-- Message affiché lorsqu'il n'y a pas d'albums -->
+            <div class="no-albums" id="noAlbums">
+                <p>Vous n'avez pas encore créé d'albums.</p>
+                <button class="add-album-btn" id="createFirstAlbumBtn">Créer mon premier album</button>
+            </div>
+
+            <!-- Exemple d'un album (sera généré dynamiquement par JavaScript) -->
+            <!-- 
+            <div class="album-card">
+                <div class="album-thumbnail">
+                    <img src="/api/placeholder/400/320" alt="Miniature album">
+                </div>
+                <div class="album-info">
+                    <h3 class="album-title">Titre de l'album</h3>
+                    <p class="album-stats">12 photos · Créé le 5 mars 2025</p>
+                </div>
+            </div>
+            -->
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter un album -->
+    <div class="modal-overlay" id="albumModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Créer un nouvel album</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="albumForm">
+                <div class="form-group">
+                    <label for="albumTitle">Titre de l'album</label>
+                    <input type="text" id="albumTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="albumDescription">Description (optionnelle)</label>
+                    <textarea id="albumDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Créer l'album</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
