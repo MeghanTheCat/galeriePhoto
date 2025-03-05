@@ -215,11 +215,14 @@ async function loadAlbums() {
                 albumCard.className = 'album-card';
                 albumCard.dataset.id = album.id;
 
-                const coverUrl = album.cover_image_url || '/api/placeholder/400/320';
+                const coverUrl = album.cover_image_url || '/assets/placeholder-album.jpg';
 
                 albumCard.innerHTML = `
                     <div class="album-thumbnail">
                         <img src="${coverUrl}" alt="${album.title}">
+                        <button class="delete-album-btn" data-id="${album.id}" title="Supprimer cet album">
+                            <span>&times;</span>
+                        </button>
                     </div>
                     <div class="album-info">
                         <h3 class="album-title">${album.title}</h3>
@@ -227,9 +230,19 @@ async function loadAlbums() {
                     </div>
                 `;
 
-                // Ouvrir l'album au clic
-                albumCard.addEventListener('click', () => {
-                    window.location.href = `../pages/album.html?id=${album.id}`;
+                // Ouvrir l'album au clic sur la carte (sauf si on clique sur le bouton supprimer)
+                albumCard.addEventListener('click', (event) => {
+                    // Ne pas naviguer vers l'album si on clique sur le bouton supprimer
+                    if (!event.target.closest('.delete-album-btn')) {
+                        window.location.href = `../pages/album.html?id=${album.id}`;
+                    }
+                });
+
+                // Ajouter un gestionnaire spécifique pour le bouton de suppression
+                const deleteBtn = albumCard.querySelector('.delete-album-btn');
+                deleteBtn.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Empêcher la propagation de l'événement (ne pas ouvrir l'album)
+                    deleteAlbum(album);
                 });
 
                 albumsGrid.appendChild(albumCard);
@@ -313,6 +326,82 @@ async function createAlbum(event) {
     } finally {
         submitBtn.textContent = initialButtonText;
         submitBtn.disabled = false;
+    }
+}
+
+// Fonction pour supprimer un album
+async function deleteAlbum(album) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer l'album "${album.title}" ?\nCette action supprimera également toutes les photos contenues dans cet album et ne peut pas être annulée.`)) {
+        return;
+    }
+
+    try {
+        // 1. Récupérer toutes les photos de l'album
+        const { data: photos, error: photosError } = await supabase
+            .from('photos')
+            .select('id, storage_path')
+            .eq('album_id', album.id);
+
+        if (photosError) throw photosError;
+
+        // 2. Supprimer les fichiers stockés
+        if (photos && photos.length > 0) {
+            // Récupérer tous les chemins de stockage
+            const storagePaths = photos.map(photo => photo.storage_path);
+
+            // Supprimer les fichiers du stockage
+            const { error: storageError } = await supabase.storage
+                .from('photos')
+                .remove(storagePaths);
+
+            if (storageError) {
+                console.error('Erreur lors de la suppression des fichiers:', storageError);
+                // Continuer malgré l'erreur pour essayer de supprimer les références en base de données
+            }
+
+            // 3. Supprimer les entrées de photos dans la base de données
+            const { error: photosDeleteError } = await supabase
+                .from('photos')
+                .delete()
+                .eq('album_id', album.id);
+
+            if (photosDeleteError) throw photosDeleteError;
+        }
+
+        // 4. Supprimer l'image de couverture si elle existe et n'est pas un placeholder
+        if (album.cover_image_url && !album.cover_image_url.includes('placeholder')) {
+            // Extraire le chemin de l'URL de couverture
+            try {
+                // Supposons que l'URL de couverture contient le chemin après le nom du bucket
+                const coverPath = new URL(album.cover_image_url).pathname
+                    .split('/object/public/photos/')[1];
+
+                if (coverPath) {
+                    await supabase.storage
+                        .from('photos')
+                        .remove([coverPath]);
+                }
+            } catch (coverError) {
+                console.error('Erreur lors de la suppression de la couverture:', coverError);
+                // Continuer malgré l'erreur
+            }
+        }
+
+        // 5. Supprimer l'album lui-même
+        const { error: albumDeleteError } = await supabase
+            .from('albums')
+            .delete()
+            .eq('id', album.id);
+
+        if (albumDeleteError) throw albumDeleteError;
+
+        // 6. Recharger la liste des albums
+        await loadAlbums();
+
+        console.log(`Album "${album.title}" supprimé avec succès`);
+    } catch (error) {
+        console.error('Erreur lors de la suppression de l\'album:', error);
+        alert('Une erreur est survenue lors de la suppression de l\'album.');
     }
 }
 
