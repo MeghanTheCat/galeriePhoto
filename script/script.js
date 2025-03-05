@@ -257,7 +257,33 @@ async function createAlbum(event) {
     try {
         const title = document.getElementById('albumTitle').value;
         const description = document.getElementById('albumDescription').value;
+        const coverFile = document.getElementById('albumCover').files[0];
         const now = new Date().toISOString();
+
+        // URL de l'image de couverture (par défaut, utiliser un placeholder)
+        let coverImageUrl = "/assets/placeholder-album.jpg"; // Chemin vers votre image placeholder
+
+        // Si une image de couverture a été sélectionnée, la télécharger
+        if (coverFile) {
+            // Générer un nom de fichier unique
+            const fileExt = coverFile.name.split('.').pop();
+            const filename = `cover_${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+            const filePath = `covers/${filename}`;
+
+            // Télécharger l'image dans le storage Supabase
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('photos')
+                .upload(filePath, coverFile);
+
+            if (uploadError) throw uploadError;
+
+            // Récupérer l'URL publique de l'image
+            const { data: { publicUrl } } = supabase.storage
+                .from('photos')
+                .getPublicUrl(filePath);
+
+            coverImageUrl = publicUrl;
+        }
 
         // Insérer l'album dans Supabase
         const { data: album, error } = await supabase
@@ -270,7 +296,7 @@ async function createAlbum(event) {
                     photo_count: 0,
                     created_at: now,
                     updated_at: now,
-                    cover_image_url: "../assets/banane.jpg"
+                    cover_image_url: coverImageUrl
                 }
             ])
             .select()
@@ -287,6 +313,33 @@ async function createAlbum(event) {
     } finally {
         submitBtn.textContent = initialButtonText;
         submitBtn.disabled = false;
+    }
+}
+
+// Prévisualiser l'image de couverture sélectionnée
+function previewCover(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('coverPreview');
+
+    if (!preview) {
+        console.error("Élément de prévisualisation non trouvé");
+        return;
+    }
+
+    if (file) {
+        console.log("Prévisualisation du fichier:", file.name);
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.onerror = function (e) {
+            console.error("Erreur lors de la lecture du fichier:", e);
+            preview.style.display = 'none';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
     }
 }
 
@@ -310,6 +363,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('openModalBtn').addEventListener('click', openModal);
     document.getElementById('closeModalBtn').addEventListener('click', closeModal);
     document.getElementById('albumForm').addEventListener('submit', createAlbum);
+    document.getElementById('albumCover').addEventListener('change', previewCover);
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
     document.getElementById('closeLoginModalBtn').addEventListener('click', closeLoginModal);
 

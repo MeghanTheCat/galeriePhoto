@@ -56,6 +56,15 @@
                     <label for="albumDescription">Description (optionnelle)</label>
                     <textarea id="albumDescription" class="form-control" rows="3"></textarea>
                 </div>
+                <div class="form-group">
+                    <label for="albumCover">Image de couverture (optionnelle)</label>
+                    <input type="file" id="albumCover" class="form-control" accept="image/*">
+                    <small class="form-text">Si aucune image n'est sélectionnée, une image par défaut sera
+                        utilisée.</small>
+                </div>
+                <div class="cover-preview">
+                    <img id="coverPreview" style="display: none; max-width: 100%; margin-top: 10px; max-height: 200px;">
+                </div>
                 <button type="submit" class="submit-btn">Créer l'album</button>
             </form>
         </div>
