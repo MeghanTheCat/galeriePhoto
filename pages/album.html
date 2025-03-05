@@ -7,8 +7,8 @@
     <title>Album | Ma Galerie Photo</title>
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script/album.js" defer></script>
-    <link rel="stylesheet" href="style/style.css">
+    <script src="../script/album.js" defer></script>
+    <link rel="stylesheet" href="../style/style.css">
     <link rel="stylesheet" href="../style/album.css">
 </head>
 
@@ -80,6 +80,11 @@
             <button class="close-btn" id="closeViewModalBtn">&times;</button>
             <img id="currentPhoto" src="" alt="">
             <h3 id="photoViewTitle"></h3>
+            <p id="photoViewDescription" class="photo-description"></p>
+            <!-- Ajouter un indicateur d'erreur de chargement -->
+            <p id="photoLoadError" class="error-message" style="display: none;">
+                Impossible de charger l'image
+            </p>
         </div>
     </div>
 </body>

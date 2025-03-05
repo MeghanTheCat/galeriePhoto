@@ -33,7 +33,7 @@ async function checkAuth() {
         `;
         // Rediriger vers la page d'accueil si non connecté
         alert('Veuillez vous connecter pour accéder à cet album.');
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
         return false;
     }
 }
@@ -44,7 +44,7 @@ async function handleLogout() {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
 
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
     } catch (error) {
         console.error('Erreur de déconnexion:', error);
     }
@@ -58,7 +58,7 @@ async function loadAlbumDetails() {
 
         if (!currentAlbumId) {
             alert('Album non trouvé.');
-            window.location.href = 'index.html';
+            window.location.href = '../index.html';
             return;
         }
 
@@ -73,7 +73,7 @@ async function loadAlbumDetails() {
 
         if (!album) {
             alert('Album non trouvé.');
-            window.location.href = 'index.html';
+            window.location.href = '../index.html';
             return;
         }
 
@@ -81,7 +81,7 @@ async function loadAlbumDetails() {
         // Si vous voulez implémenter cette vérification
         // if (album.created_by !== currentUser.id) {
         //     alert('Vous n\'avez pas accès à cet album.');
-        //     window.location.href = 'index.html';
+        //     window.location.href = '../index.html';
         //     return;
         // }
 
@@ -104,10 +104,20 @@ async function loadAlbumDetails() {
 // Charger les photos de l'album
 async function loadPhotos() {
     try {
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('photosGrid').style.display = 'none';
+        const loadingElement = document.getElementById('loading');
+        const photosGridElement = document.getElementById('photosGrid');
+        const noPhotosElement = document.getElementById('noPhotos');
 
-        // Récupérer les photos depuis Supabase (à créer dans votre base de données)
+        // Vérifier que les éléments existent
+        if (!loadingElement || !photosGridElement) {
+            console.error("Éléments DOM requis non trouvés");
+            return;
+        }
+
+        loadingElement.style.display = 'block';
+        photosGridElement.style.display = 'none';
+
+        // Récupérer les photos depuis Supabase
         const { data: photos, error } = await supabase
             .from('photos')
             .select('*')
@@ -116,45 +126,72 @@ async function loadPhotos() {
 
         if (error) throw error;
 
-        const photosGrid = document.getElementById('photosGrid');
-        const noPhotos = document.getElementById('noPhotos');
-
         // Vider la grille existante
-        photosGrid.innerHTML = '';
+        photosGridElement.innerHTML = '';
 
         // Afficher un message s'il n'y a pas de photos
         if (!photos || photos.length === 0) {
-            noPhotos.style.display = 'block';
-            document.getElementById('addFirstPhotoBtn').addEventListener('click', openPhotoModal);
+            if (noPhotosElement) {
+                noPhotosElement.style.display = 'block';
+
+                // Vérifier si le bouton existe avant d'ajouter l'écouteur d'événement
+                const addFirstPhotoBtn = document.getElementById('addFirstPhotoBtn');
+                if (addFirstPhotoBtn) {
+                    addFirstPhotoBtn.addEventListener('click', openPhotoModal);
+                }
+            }
         } else {
-            noPhotos.style.display = 'none';
+            // Cacher le message "pas de photos" si l'élément existe
+            if (noPhotosElement) {
+                noPhotosElement.style.display = 'none';
+            }
 
             // Afficher chaque photo
+            // À l'intérieur de la fonction loadPhotos, dans la partie traitement des photos
             photos.forEach(photo => {
                 const photoCard = document.createElement('div');
                 photoCard.className = 'photo-card';
                 photoCard.dataset.id = photo.id;
 
+                // Construire l'URL publique pour l'image
+                let publicUrl;
+                try {
+                    const { data } = supabase.storage
+                        .from('photos')
+                        .getPublicUrl(photo.storage_path);
+
+                    publicUrl = data.publicUrl;
+                    console.log("URL de l'image:", publicUrl);
+                } catch (error) {
+                    console.error("Erreur lors de la récupération de l'URL:", error);
+                    // Fallback sur l'URL directe si disponible
+                    publicUrl = photo.storage_path;
+                }
+
                 photoCard.innerHTML = `
-                    <div class="photo-thumbnail">
-                        <img src="${photo.photo_url}" alt="${photo.title || 'Photo'}">
-                    </div>
-                    ${photo.title ? `<div class="photo-title">${photo.title}</div>` : ''}
-                `;
+        <div class="photo-thumbnail">
+            <img src="${publicUrl}" alt="${photo.title || 'Photo'}" 
+                onerror="this.onerror=null; this.src='/path/to/fallback-image.jpg'; console.error('Impossible de charger:', this.alt);">
+        </div>
+        ${photo.title ? `<div class="photo-title">${photo.title}</div>` : ''}
+    `;
 
                 // Ouvrir la photo en grand au clic
-                photoCard.addEventListener('click', () => openPhotoViewer(photo));
+                photoCard.addEventListener('click', () => openPhotoViewer(photo, publicUrl));
 
-                photosGrid.appendChild(photoCard);
+                photosGridElement.appendChild(photoCard);
             });
         }
 
-        // Cacher l'indicateur de chargement
-        document.getElementById('loading').style.display = 'none';
-        photosGrid.style.display = 'grid';
+        // Cacher l'indicateur de chargement et afficher la grille
+        loadingElement.style.display = 'none';
+        photosGridElement.style.display = 'grid';
     } catch (error) {
         console.error('Erreur lors du chargement des photos:', error);
-        document.getElementById('loading').textContent = 'Erreur lors du chargement des photos.';
+        const loadingElement = document.getElementById('loading');
+        if (loadingElement) {
+            loadingElement.textContent = 'Erreur lors du chargement des photos.';
+        }
     }
 }
 
@@ -197,6 +234,7 @@ async function addPhoto(event) {
 
     try {
         const photoTitle = document.getElementById('photoTitle').value;
+        const photoDescription = document.getElementById('photoDescription')?.value || ''; // Si vous ajoutez un champ description
         const photoFile = document.getElementById('photoFile').files[0];
 
         if (!photoFile) {
@@ -208,20 +246,25 @@ async function addPhoto(event) {
 
         // Générer un nom de fichier unique
         const fileExt = photoFile.name.split('.').pop();
-        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-        const filePath = `photos/${currentAlbumId}/${fileName}`;
+        const filename = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+
+        // Créer le chemin de stockage dans le format souhaité
+        const storagePath = `assets/${currentAlbumId}/${filename}`;
 
         // Télécharger l'image dans le storage Supabase
         const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('album-photos')
-            .upload(filePath, photoFile);
+            .from('photos')
+            .upload(storagePath, photoFile);
 
         if (uploadError) throw uploadError;
 
-        // Récupérer l'URL publique de l'image
+        // Récupérer l'URL publique de l'image (utile pour l'affichage)
         const { data: { publicUrl } } = supabase.storage
-            .from('album-photos')
-            .getPublicUrl(filePath);
+            .from('photos')
+            .getPublicUrl(storagePath);
+
+        // Timestamp actuel pour created_at et updated_at
+        const currentTimestamp = new Date().toISOString();
 
         // Ajouter l'information de la photo dans la base de données
         const { data: photo, error: insertError } = await supabase
@@ -229,10 +272,12 @@ async function addPhoto(event) {
             .insert([
                 {
                     album_id: currentAlbumId,
+                    filename: filename,
+                    storage_path: storagePath,
                     title: photoTitle,
-                    photo_url: publicUrl,
-                    created_by: currentUser.id,
-                    created_at: new Date().toISOString()
+                    description: photoDescription,
+                    created_at: currentTimestamp,
+                    updated_at: currentTimestamp
                 }
             ])
             .select()
@@ -240,12 +285,12 @@ async function addPhoto(event) {
 
         if (insertError) throw insertError;
 
-        // Mettre à jour le compteur de photos de l'album
+        // Mettre à jour le compteur de photos de l'album et éventuellement l'image de couverture
         const { error: updateError } = await supabase
             .from('albums')
             .update({
                 photo_count: (currentAlbum.photo_count || 0) + 1,
-                updated_at: new Date().toISOString(),
+                updated_at: currentTimestamp,
                 cover_image_url: currentAlbum.photo_count === 0 ? publicUrl : currentAlbum.cover_image_url
             })
             .eq('id', currentAlbumId);
@@ -265,13 +310,58 @@ async function addPhoto(event) {
 }
 
 // Ouvrir la visionneuse de photo
-function openPhotoViewer(photo) {
+function openPhotoViewer(photo, publicUrl) {
+    console.log("Ouverture de la photo:", photo);
+    console.log("URL publique:", publicUrl);
+
     const modal = document.getElementById('viewPhotoModal');
     const photoImg = document.getElementById('currentPhoto');
     const photoTitle = document.getElementById('photoViewTitle');
+    const photoDescription = document.getElementById('photoViewDescription');
 
-    photoImg.src = photo.photo_url;
-    photoTitle.textContent = photo.title || '';
+    if (!modal || !photoImg) {
+        console.error("Éléments du visualiseur manquants");
+        return;
+    }
+
+    // Utiliser l'URL fournie ou reconstruire l'URL si nécessaire
+    if (!publicUrl) {
+        try {
+            const { data } = supabase.storage
+                .from('photos')
+                .getPublicUrl(photo.storage_path);
+
+            publicUrl = data.publicUrl;
+            console.log("URL reconstruite:", publicUrl);
+        } catch (error) {
+            console.error("Erreur lors de la récupération de l'URL:", error);
+            // Fallback sur l'URL directe si disponible
+            publicUrl = photo.storage_path;
+        }
+    }
+
+    // Vérifier que l'URL n'est pas undefined
+    if (!publicUrl) {
+        console.error("Impossible d'obtenir l'URL de l'image");
+        return;
+    }
+
+    photoImg.src = publicUrl;
+    photoImg.alt = photo.title || 'Photo';
+
+    if (photoTitle) {
+        photoTitle.textContent = photo.title || '';
+    }
+
+    // Afficher la description si elle existe
+    if (photoDescription) {
+        if (photo.description) {
+            photoDescription.textContent = photo.description;
+            photoDescription.style.display = 'block';
+        } else {
+            photoDescription.style.display = 'none';
+        }
+    }
 
     modal.classList.add('modal-visible');
 }
@@ -290,7 +380,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Configuration des gestionnaires d'événements
     document.getElementById('backBtn').addEventListener('click', () => {
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
     });
 
     document.getElementById('addPhotoBtn').addEventListener('click', openPhotoModal);
