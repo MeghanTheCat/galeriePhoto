@@ -229,7 +229,7 @@ async function loadAlbums() {
 
                 // Ouvrir l'album au clic
                 albumCard.addEventListener('click', () => {
-                    window.location.href = `album.html?id=${album.id}`;
+                    window.location.href = `../pages/album.html?id=${album.id}`;
                 });
 
                 albumsGrid.appendChild(albumCard);
@@ -257,6 +257,7 @@ async function createAlbum(event) {
     try {
         const title = document.getElementById('albumTitle').value;
         const description = document.getElementById('albumDescription').value;
+        const now = new Date().toISOString();
 
         // Insérer l'album dans Supabase
         const { data: album, error } = await supabase
@@ -265,8 +266,11 @@ async function createAlbum(event) {
                 {
                     title,
                     description,
-                    user_id: currentUser.id,  // Associer l'album à l'utilisateur actuel
-                    photo_count: 0
+                    created_by: currentUser.id,
+                    photo_count: 0,
+                    created_at: now,
+                    updated_at: now,
+                    cover_image_url: "../assets/banane.jpg"
                 }
             ])
             .select()

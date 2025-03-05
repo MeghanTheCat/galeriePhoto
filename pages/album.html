@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album | Ma Galerie Photo</title>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script/album.js" defer></script>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="../style/album.css">
+</head>
+
+<body>
+    <!-- En-tête de la page -->
+    <header>
+        <div class="logo">Ma Galerie Photo</div>
+        <div class="user-section">
+            <!-- Sera rempli dynamiquement via JavaScript -->
+        </div>
+        <button class="back-btn" id="backBtn">← Retour aux albums</button>
+    </header>
+
+    <!-- Contenu principal -->
+    <div class="container">
+        <!-- Détails de l'album -->
+        <div class="album-header">
+            <h1 id="albumTitle">Chargement...</h1>
+            <p id="albumDescription"></p>
+        </div>
+
+        <!-- Indicateur de chargement -->
+        <div id="loading" class="loading">
+            Chargement des photos...
+        </div>
+
+        <!-- Bouton pour ajouter des photos -->
+        <div class="add-photo-section">
+            <button class="add-photo-btn" id="addPhotoBtn">+ Ajouter des photos</button>
+        </div>
+
+        <!-- Grille de photos (à remplir dynamiquement) -->
+        <div class="photos-grid" id="photosGrid" style="display: none;">
+            <!-- Message affiché lorsqu'il n'y a pas de photos -->
+            <div class="no-photos" id="noPhotos" style="display: none;">
+                <p>Cet album ne contient pas encore de photos.</p>
+                <button class="add-photo-btn" id="addFirstPhotoBtn">Ajouter ma première photo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter des photos -->
+    <div class="modal-overlay" id="photoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Ajouter des photos</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="photoForm">
+                <div class="form-group">
+                    <label for="photoTitle">Titre de la photo (optionnel)</label>
+                    <input type="text" id="photoTitle" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="photoFile">Choisir une photo</label>
+                    <input type="file" id="photoFile" class="form-control" accept="image/*" required>
+                </div>
+                <div class="upload-preview">
+                    <img id="photoPreview" style="display: none; max-width: 100%; margin-top: 10px;">
+                </div>
+                <button type="submit" class="submit-btn">Ajouter la photo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de visualisation de photo -->
+    <div class="modal-overlay" id="viewPhotoModal">
+        <div class="modal-content photo-viewer">
+            <button class="close-btn" id="closeViewModalBtn">&times;</button>
+            <img id="currentPhoto" src="" alt="">
+            <h3 id="photoViewTitle"></h3>
+        </div>
+    </div>
+</body>
+
+</html>
