@@ -1,142 +1,237 @@
-/* Ajouts au fichier style.css pour la page album */
+/* Ajouts au fichier style.css pour la page album - Thème rustique et vintage */
 
 /* Styles pour l'en-tête de l'album */
 .album-header {
-    margin-bottom: 2rem;
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2.5rem;
+    background-color: #ece5d8;
+    /* Couleur vieux papier */
+    padding: 2rem;
+    border-radius: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid #bcaaa4;
+    position: relative;
+}
+
+.album-header::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    border: 1px dashed #a1887f;
+    pointer-events: none;
+    opacity: 0.4;
 }
 
 .album-header h1 {
-    margin-bottom: 0.5rem;
-    font-size: 1.8rem;
-    color: #333;
+    margin-bottom: 0.8rem;
+    font-size: 2rem;
+    color: #4e342e;
+    font-family: 'Georgia', serif;
+    position: relative;
+    display: inline-block;
+}
+
+.album-header h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #8d6e63;
 }
 
 .album-header p {
-    color: #666;
-    line-height: 1.5;
+    color: #6d4c41;
+    line-height: 1.6;
+    font-style: italic;
 }
 
 /* Bouton retour */
 .back-btn {
-    background-color: #f5f5f5;
-    color: #333;
-    border: 1px solid #ddd;
-    padding: 0.6rem 1.2rem;
-    border-radius: 4px;
+    background-color: #bcaaa4;
+    color: #3e2723;
+    border: 2px solid #5d4037;
+    padding: 0.7rem 1.2rem;
+    border-radius: 0;
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: all 0.3s;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
 }
 
 .back-btn:hover {
-    background-color: #e5e5e5;
+    background-color: #a1887f;
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
 }
 
 /* Section d'ajout de photos */
 .add-photo-section {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     text-align: right;
 }
 
 .add-photo-btn {
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 4px;
+    background-color: #a5d6a7;
+    /* Vert vintage */
+    color: #2e3b2e;
+    border: 2px solid #4b6455;
+    padding: 0.7rem 1.2rem;
+    border-radius: 0;
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: all 0.3s;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
 }
 
 .add-photo-btn:hover {
-    background-color: #4cae4c;
+    background-color: #81c784;
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Grille de photos */
 .photos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
 }
 
 .photo-card {
-    background-color: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #ece5d8;
+    border-radius: 0;
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s;
     cursor: pointer;
-    height: 200px;
-    /* Hauteur fixe pour uniformité */
+    border: 1px solid #bcaaa4;
+    position: relative;
+    transform: rotate(-1deg);
+    /* Légère rotation aléatoire */
+    width: auto;
+    height: auto;
+    max-width: 280px;
+    max-height: 280px;
+    display: inline-block;
+    margin: 1rem;
+}
+
+/* Alterner les rotations pour les photos */
+.photo-card:nth-child(2n) {
+    transform: rotate(1.5deg);
+}
+
+.photo-card:nth-child(3n) {
+    transform: rotate(-0.5deg);
+}
+
+.photo-card:nth-child(4n) {
+    transform: rotate(2deg);
 }
 
 .photo-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-10px) rotate(0deg);
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+    z-index: 2;
 }
 
 .photo-thumbnail {
-    width: 100%;
-    height: 85%;
     overflow: hidden;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ece5d8;
+    /* Couleur de fond pour les marges */
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.photo-thumbnail::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
+    z-index: 1;
+    pointer-events: none;
 }
 
 .photo-thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: opacity 0.3s;
+    object-fit: contain;
+    /* 'contain' pour éviter le recadrage */
+    transition: transform 0.8s;
+    filter: sepia(20%);
+    /* Filtre sépia pour effet vieilli */
+    display: block;
 }
 
-.photo-thumbnail img[src=""] {
-    opacity: 0;
+.photo-card:hover .photo-thumbnail img {
+    transform: scale(1.05);
+    filter: sepia(10%);
 }
 
 .error-message {
-    color: #dc3545;
+    color: #8b0000;
     text-align: center;
     display: none;
     margin-top: 1rem;
+    font-style: italic;
+    background-color: #e3c4c0;
+    padding: 0.7rem;
+    border-left: 4px solid #b71c1c;
 }
 
 /* Style pour la description de photo dans le visualiseur */
 .photo-description {
     text-align: center;
-    color: #666;
-    margin-top: 0.5rem;
-    max-width: 80%;
-    line-height: 1.5;
-    font-size: 0.9rem;
+    color: #6d4c41;
+    margin-top: 1rem;
+    max-width: 90%;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    font-style: italic;
+    background-color: #f4eed7;
+    padding: 0.8rem;
+    border: 1px solid #bcaaa4;
 }
 
 .photo-title {
-    padding: 0.5rem;
-    text-align: center;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none;
+    /* Masquer le titre dans les cartes de photos */
 }
 
 /* Message quand il n'y a pas de photos */
 .no-photos {
     text-align: center;
-    padding: 3rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 4rem;
+    background-color: #ece5d8;
+    border-radius: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     grid-column: 1 / -1;
+    border: 1px solid #bcaaa4;
 }
 
 .no-photos p {
-    color: #777;
-    margin-bottom: 1.5rem;
+    color: #6d4c41;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    font-style: italic;
 }
 
 /* Modal de visualisation de photo */
@@ -145,76 +240,215 @@
     width: auto;
     height: auto;
     max-height: 90vh;
-    padding: 1rem;
+    padding: 2rem;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #ece5d8;
+    border: 3px solid #8d6e63;
+}
+
+.photo-viewer::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border: 1px dashed #a1887f;
+    pointer-events: none;
+    opacity: 0.4;
 }
 
 .photo-viewer .close-btn {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    top: 1rem;
+    right: 1rem;
+    background-color: rgba(93, 64, 55, 0.8);
+    color: #f4eed7;
+    border-radius: 0;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s;
+}
+
+.photo-viewer .close-btn:hover {
+    background-color: rgba(93, 64, 55, 1);
+    transform: translateY(-2px);
 }
 
 .photo-viewer img {
     max-width: 100%;
     max-height: 70vh;
     object-fit: contain;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    border: 8px solid #f4eed7;
+    /* Bordure style vieux cadre */
+    filter: sepia(15%);
+    transition: filter 0.3s;
+    width: auto;
+    height: auto;
+}
+
+.photo-viewer img:hover {
+    filter: sepia(0%);
 }
 
 .photo-viewer h3 {
     text-align: center;
-    color: #333;
-    margin-top: 0.5rem;
+    color: #4e342e;
+    margin-top: 1rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1rem;
+    background-color: #f4eed7;
+    border: 1px solid #bcaaa4;
+    display: inline-block;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .photo-actions {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     display: flex;
     justify-content: center;
     width: 100%;
+    position: relative;
+    /* Permet le positionnement des éléments enfants en absolu */
+    height: 40px;
+    /* Hauteur fixe pour l'espace des actions */
 }
 
 .delete-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    background-color: rgba(165, 74, 68, 0.8);
+    /* Rouge vintage semi-transparent */
+    color: #f4eed7;
+    border: 1px solid #6d2e2a;
+    padding: 0.5rem 0.8rem;
+    border-radius: 0;
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: all 0.3s;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
+    background-color: #8b0000;
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Ajouter un effet texture de papier ancien sur l'upload de photos */
+.upload-preview {
+    background-color: #f4eed7;
+    padding: 1rem;
+    border: 1px solid #bcaaa4;
+    position: relative;
+    margin-top: 1.5rem;
+}
+
+.upload-preview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%23a1887f' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+.upload-preview img {
+    max-width: 100%;
+    border: 5px solid #f4eed7;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Ajouter des épingles aux coins des photos (effet décoratif) */
+.photo-card::before,
+.photo-card::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #5d4037;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
+    z-index: 3;
+}
+
+.photo-card::before {
+    top: 8px;
+    left: 8px;
+}
+
+.photo-card::after {
+    top: 8px;
+    right: 8px;
+}
+
+/* Animation pour l'effet d'ouverture du visualiseur */
+@keyframes openViewer {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-visible .photo-viewer {
+    animation: openViewer 0.4s ease-out forwards;
 }
 
 /* Responsive pour la page d'album */
 @media (max-width: 768px) {
     .photos-grid {
-        grid-template-columns: repeat(2, 1fr);
+        justify-content: space-around;
+    }
+
+    .album-header {
+        padding: 1.5rem;
+    }
+
+    .photo-viewer {
+        padding: 1.5rem;
+    }
+
+    .photo-viewer img {
+        border-width: 6px;
     }
 }
 
 @media (max-width: 480px) {
     .photos-grid {
-        grid-template-columns: 1fr;
+        justify-content: center;
     }
 
-    .photo-card {
-        height: 250px;
+    .album-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .photo-viewer {
+        padding: 1rem;
+    }
+
+    .photo-viewer img {
+        border-width: 4px;
     }
 }

@@ -1,97 +1,121 @@
-/* Styles généraux */
+/* Styles généraux - Thème rustique et vintage */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 body {
-    background-color: #f5f5f5;
-    color: #333;
+    background-color: #f4eed7;
+    /* Fond papier vieilli */
+    color: #472d20;
+    /* Brun foncé pour le texte */
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d0bea2' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
 }
 
 /* Header */
 header {
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 1rem 2rem;
+    background-color: #5d4037;
+    /* Brun bois foncé */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 1.2rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 3px solid #8d6e63;
+    /* Bordure façon bois */
 }
 
 .logo {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #333;
+    color: #f4eed7;
+    /* Couleur papier vieilli */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    font-family: 'Georgia', serif;
+    letter-spacing: 1px;
 }
 
 .add-album-btn,
 .login-btn {
-    background-color: #4a89dc;
-    color: white;
-    border: none;
+    background-color: #8d6e63;
+    /* Brun bois moyen */
+    color: #f4eed7;
+    border: 2px solid #5d4037;
+    /* Bordure foncée */
     padding: 0.6rem 1.2rem;
-    border-radius: 4px;
+    border-radius: 0;
+    /* Carré pour style vintage */
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: all 0.3s;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
 }
 
 .add-album-btn:hover,
 .login-btn:hover {
-    background-color: #3b7dd8;
+    background-color: #6d4c41;
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
 }
 
 .logout-btn {
-    background-color: #f5f5f5;
-    color: #333;
-    border: 1px solid #ddd;
+    background-color: #bcaaa4;
+    /* Brun très clair */
+    color: #3e2723;
+    /* Brun très foncé */
+    border: 2px solid #5d4037;
     padding: 0.5rem 1rem;
-    border-radius: 4px;
+    border-radius: 0;
     cursor: pointer;
     margin-left: 1rem;
-    transition: background-color 0.2s;
+    transition: all 0.3s;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
 }
 
 .logout-btn:hover {
-    background-color: #e5e5e5;
+    background-color: #a1887f;
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
 }
 
-.add-album-btn,
-.login-btn,
 .register-btn {
-    background-color: #4a89dc;
-    color: white;
-    border: none;
+    background-color: #a5d6a7;
+    /* Vert vintage */
+    color: #2e3b2e;
+    /* Vert foncé */
+    border: 2px solid #4b6455;
     padding: 0.6rem 1.2rem;
-    border-radius: 4px;
+    border-radius: 0;
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: all 0.3s;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
     margin-left: 0.5rem;
 }
 
-.add-album-btn:hover,
-.login-btn:hover,
 .register-btn:hover {
-    background-color: #3b7dd8;
-}
-
-.register-btn {
-    background-color: #5cb85c;
-}
-
-.register-btn:hover {
-    background-color: #4cae4c;
+    background-color: #81c784;
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
 }
 
 .form-text {
     display: block;
     margin-top: 0.25rem;
     font-size: 0.8rem;
-    color: #6c757d;
+    color: #6d4c41;
+    font-style: italic;
 }
 
 .user-section {
@@ -100,8 +124,9 @@ header {
 }
 
 .user-email {
-    color: #555;
+    color: #f4eed7;
     font-size: 0.9rem;
+    font-style: italic;
 }
 
 /* Container principal */
@@ -114,30 +139,60 @@ header {
 /* Section titre */
 .section-title {
     margin: 1.5rem 0;
-    font-size: 1.5rem;
-    color: #333;
+    font-size: 1.8rem;
+    color: #5d4037;
     font-weight: 500;
+    text-align: center;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 120px;
+    height: 3px;
+    background-color: #8d6e63;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* Grille d'albums */
 .albums-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 .album-card {
-    background-color: white;
-    border-radius: 8px;
+    background-color: #ece5d8;
+    /* Couleur vieux papier légèrement différente */
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s;
     cursor: pointer;
+    border: 1px solid #bcaaa4;
+    /* Bordure subtile */
+    position: relative;
+}
+
+.album-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    pointer-events: none;
 }
 
 .album-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px) rotate(1deg);
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .album-card:hover .delete-album-btn {
@@ -145,59 +200,70 @@ header {
 }
 
 .delete-album-btn:hover {
-    background-color: rgba(220, 53, 69, 0.9);
+    background-color: #d32f2f;
 }
 
 .album-thumbnail {
     width: 100%;
-    height: 180px;
+    height: 200px;
     overflow: hidden;
     position: relative;
-    background-color: #eee;
+    background-color: #d7ccc8;
+    border-bottom: 3px solid #8d6e63;
 }
 
 .album-thumbnail img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.8s;
+    filter: sepia(20%);
+    /* Filtre sépia pour effet vieilli */
+}
+
+.album-card:hover .album-thumbnail img {
+    transform: scale(1.05);
+    filter: sepia(10%);
 }
 
 .delete-album-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: rgba(220, 53, 69, 0.7);
-    color: white;
-    border: none;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border-radius: 0;
+    background-color: rgba(165, 42, 42, 0.8);
+    /* Couleur bordeaux vintage */
+    color: #f4eed7;
+    border: 2px solid #d7ccc8;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     opacity: 0;
-    transition: opacity 0.3s ease, background-color 0.3s ease;
+    transition: all 0.3s ease;
     z-index: 2;
     padding: 0;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .delete-album-btn span {
     display: block;
-    font-size: 22px;
-    line-height: 22px;
-    margin-top: -2px;
-    font-weight: normal;
+    font-size: 24px;
+    line-height: 24px;
+    font-weight: bold;
     text-align: center;
     width: 100%;
 }
 
 .album-owner {
     font-size: 0.85rem;
-    color: #666;
+    color: #6d4c41;
     margin-top: 0.25rem;
     display: flex;
     align-items: center;
+    font-style: italic;
 }
 
 .album-owner::before {
@@ -206,36 +272,42 @@ header {
 }
 
 .album-info {
-    padding: 1rem;
+    padding: 1.2rem;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
+    background-color: #ece5d8;
 }
 
 .album-stats {
     font-size: 0.9rem;
-    color: #777;
+    color: #6d4c41;
 }
 
 .album-title {
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 0.5rem;
+    color: #4e342e;
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
 }
 
 .cover-preview {
     margin-top: 1rem;
     text-align: center;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    padding: 0.5rem;
+    background-color: #d7ccc8;
+    border-radius: 0;
+    padding: 0.8rem;
+    border: 1px solid #bcaaa4;
 }
 
 .cover-preview img {
     max-width: 100%;
     max-height: 200px;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 0;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     object-fit: contain;
+    border: 3px solid #f4eed7;
 }
 
 /* Modal pour ajouter un album */
@@ -245,7 +317,7 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(44, 32, 28, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -262,96 +334,144 @@ header {
 }
 
 .modal-content {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
+    background-color: #ece5d8;
+    padding: 2.5rem;
+    border-radius: 0;
     width: 90%;
     max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 3px solid #8d6e63;
+    position: relative;
+}
+
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    border: 1px solid #8d6e63;
+    pointer-events: none;
+    opacity: 0.3;
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.8rem;
+    border-bottom: 2px solid #8d6e63;
+    padding-bottom: 1rem;
 }
 
 .modal-title {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 500;
+    color: #4e342e;
+    letter-spacing: 1px;
 }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     cursor: pointer;
-    color: #777;
+    color: #5d4037;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: #d32f2f;
 }
 
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
+    color: #4e342e;
+    letter-spacing: 0.5px;
 }
 
 .form-control {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 0.85rem;
+    border: 2px solid #bcaaa4;
+    border-radius: 0;
     font-size: 1rem;
+    transition: border-color 0.3s;
+    background-color: #f4eed7;
+    color: #4e342e;
+    font-family: 'Georgia', serif;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #8d6e63;
 }
 
 .submit-btn {
-    background-color: #4a89dc;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
+    background-color: #8d6e63;
+    color: #f4eed7;
+    border: 2px solid #5d4037;
+    padding: 0.85rem 1.5rem;
+    border-radius: 0;
     cursor: pointer;
     font-weight: 500;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
 }
 
 .submit-btn:hover {
-    background-color: #3b7dd8;
+    background-color: #6d4c41;
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Message quand il n'y a pas d'albums */
 .no-albums {
     text-align: center;
-    padding: 3rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 4rem 3rem;
+    background-color: #ece5d8;
+    border-radius: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid #bcaaa4;
 }
 
 .no-albums p {
-    color: #777;
-    margin-bottom: 1.5rem;
+    color: #6d4c41;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    font-style: italic;
 }
 
 /* Indicateur de chargement */
 .loading {
     text-align: center;
-    padding: 2rem;
-    color: #777;
+    padding: 2.5rem;
+    color: #6d4c41;
+    font-style: italic;
+    font-size: 1.1rem;
 }
 
 /* Message d'erreur */
 .error-message {
-    background-color: #ffebee;
-    color: #c62828;
-    padding: 0.75rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
+    background-color: #e3c4c0;
+    color: #8b0000;
+    padding: 0.85rem;
+    border-radius: 0;
+    margin-bottom: 1.2rem;
+    font-size: 0.95rem;
+    border-left: 4px solid #b71c1c;
 }
 
 /* Responsive */

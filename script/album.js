@@ -226,12 +226,26 @@ async function loadPhotos() {
                 }
 
                 photoCard.innerHTML = `
-                    <div class="photo-thumbnail">
-                        <img src="${publicUrl}" alt="${photo.title || 'Photo'}" 
-                            onerror="this.onerror=null; this.src='/path/to/fallback-image.jpg'; console.error('Impossible de charger:', this.alt);">
-                    </div>
-                    ${photo.title ? `<div class="photo-title">${photo.title}</div>` : ''}
-                `;
+                <div class="photo-thumbnail">
+                    <img src="${publicUrl}" alt="${photo.title || 'Photo'}" 
+                        onerror="this.onerror=null; this.src='/path/to/fallback-image.jpg'; console.error('Impossible de charger:', this.alt);">
+                </div>
+            `;
+
+                const img = photoCard.querySelector('img');
+                img.onload = function () {
+                    // Calculer le ratio de taille pour conserver les proportions correctes
+                    const ratio = this.naturalWidth / this.naturalHeight;
+                    const maxSize = 180; // Taille maximale de base pour le cadre
+
+                    if (ratio >= 1) { // Image en paysage ou carrée
+                        photoCard.style.width = Math.min(maxSize, this.naturalWidth) + 'px';
+                        photoCard.style.height = (Math.min(maxSize, this.naturalWidth) / ratio) + 'px';
+                    } else { // Image en portrait
+                        photoCard.style.height = Math.min(maxSize, this.naturalHeight) + 'px';
+                        photoCard.style.width = (Math.min(maxSize, this.naturalHeight) * ratio) + 'px';
+                    }
+                };
 
                 // Ouvrir la photo en grand au clic
                 photoCard.addEventListener('click', () => openPhotoViewer(photo, publicUrl));
@@ -488,7 +502,12 @@ function openPhotoViewer(photo, publicUrl) {
     photoImg.alt = photo.title || 'Photo';
 
     if (photoTitle) {
-        photoTitle.textContent = photo.title || '';
+        if (photo.title) {
+            photoTitle.textContent = photo.title;
+            photoTitle.style.display = 'block';
+        } else {
+            photoTitle.style.display = 'none';
+        }
     }
 
     // Afficher la description si elle existe
@@ -509,6 +528,11 @@ function openPhotoViewer(photo, publicUrl) {
         if (isAlbumOwner) {
             deleteBtn.style.display = 'block';
             deleteBtn.onclick = () => deletePhoto(photo);
+            // S'assurer que le bouton est correctement positionné
+            deleteBtn.style.position = 'absolute';
+            deleteBtn.style.bottom = '15px';
+            deleteBtn.style.right = '15px';
+            deleteBtn.style.zIndex = '2';
         } else {
             deleteBtn.style.display = 'none';
         }
