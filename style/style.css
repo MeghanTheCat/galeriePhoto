@@ -27,7 +27,8 @@ header {
     color: #333;
 }
 
-.add-album-btn {
+.add-album-btn,
+.login-btn {
     background-color: #4a89dc;
     color: white;
     border: none;
@@ -38,8 +39,34 @@ header {
     transition: background-color 0.2s;
 }
 
-.add-album-btn:hover {
+.add-album-btn:hover,
+.login-btn:hover {
     background-color: #3b7dd8;
+}
+
+.logout-btn {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 1rem;
+    transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #e5e5e5;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+}
+
+.user-email {
+    color: #555;
+    font-size: 0.9rem;
 }
 
 /* Container principal */
@@ -205,7 +232,41 @@ header {
     margin-bottom: 1.5rem;
 }
 
+/* Indicateur de chargement */
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #777;
+}
+
+/* Message d'erreur */
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
 /* Responsive */
+@media (max-width: 768px) {
+    .albums-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    header {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .user-section {
+        order: 3;
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
 @media (max-width: 600px) {
     .albums-grid {
         grid-template-columns: 1fr;
@@ -213,7 +274,10 @@ header {
 
     header {
         flex-direction: column;
-        gap: 1rem;
         text-align: center;
+    }
+
+    .user-section {
+        margin: 1rem 0;
     }
 }
