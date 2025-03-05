@@ -21,8 +21,10 @@ async function checkAuth() {
     } else {
         document.querySelector('.user-section').innerHTML = `
             <button id="loginBtn" class="login-btn">Connexion</button>
+            <button id="registerBtn" class="register-btn">Inscription</button>
         `;
         document.getElementById('loginBtn').addEventListener('click', openLoginModal);
+        document.getElementById('registerBtn').addEventListener('click', openRegisterModal);
         return false;
     }
 }
@@ -60,6 +62,66 @@ async function handleLogin(event) {
     }
 }
 
+// Fonction d'inscription
+async function handleRegister(event) {
+    event.preventDefault();
+
+    // Récupérer les valeurs du formulaire
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const registerBtn = document.querySelector('.register-submit');
+    const initialText = registerBtn.textContent;
+    const errorElement = document.getElementById('registerError');
+
+    // Vérifier si les mots de passe correspondent
+    if (password !== confirmPassword) {
+        errorElement.textContent = 'Les mots de passe ne correspondent pas';
+        errorElement.style.display = 'block';
+        return;
+    }
+
+    // Vérifier la longueur du mot de passe
+    if (password.length < 6) {
+        errorElement.textContent = 'Le mot de passe doit contenir au moins 6 caractères';
+        errorElement.style.display = 'block';
+        return;
+    }
+
+    registerBtn.textContent = 'Création en cours...';
+    registerBtn.disabled = true;
+    errorElement.style.display = 'none';
+
+    try {
+        // Créer l'utilisateur dans Supabase
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+        });
+
+        if (error) throw error;
+
+        // Vérifier si l'inscription a réussi
+        if (data.user) {
+            // Fermer le modal d'inscription
+            closeRegisterModal();
+
+            // Afficher un message de succès
+            alert('Compte créé avec succès! Vous pouvez maintenant vous connecter.');
+
+            // Ouvrir le modal de connexion
+            openLoginModal();
+        }
+    } catch (error) {
+        console.error('Erreur d\'inscription:', error);
+        errorElement.textContent = error.message || 'Une erreur est survenue lors de la création du compte';
+        errorElement.style.display = 'block';
+    } finally {
+        registerBtn.textContent = initialText;
+        registerBtn.disabled = false;
+    }
+}
+
 // Fonction de déconnexion
 async function handleLogout() {
     try {
@@ -84,6 +146,18 @@ function closeLoginModal() {
     document.getElementById('loginModal').classList.remove('modal-visible');
     document.getElementById('loginForm').reset();
     document.getElementById('loginError').style.display = 'none';
+}
+
+// Ouvrir modal d'inscription
+function openRegisterModal() {
+    document.getElementById('registerModal').classList.add('modal-visible');
+}
+
+// Fermer modal d'inscription
+function closeRegisterModal() {
+    document.getElementById('registerModal').classList.remove('modal-visible');
+    document.getElementById('registerForm').reset();
+    document.getElementById('registerError').style.display = 'none';
 }
 
 // Fonction pour charger les albums
@@ -235,6 +309,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
     document.getElementById('closeLoginModalBtn').addEventListener('click', closeLoginModal);
 
+    // Nouveaux gestionnaires pour l'inscription
+    document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    document.getElementById('closeRegisterModalBtn').addEventListener('click', closeRegisterModal);
+
     // Fermer modals si clic en dehors
     document.getElementById('albumModal').addEventListener('click', function (event) {
         if (event.target === this) closeModal();
@@ -242,5 +320,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('loginModal').addEventListener('click', function (event) {
         if (event.target === this) closeLoginModal();
+    });
+
+    document.getElementById('registerModal').addEventListener('click', function (event) {
+        if (event.target === this) closeRegisterModal();
     });
 });

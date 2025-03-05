@@ -82,6 +82,33 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal d'inscription -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Créer un compte</h3>
+                <button class="close-btn" id="closeRegisterModalBtn">&times;</button>
+            </div>
+            <div id="registerError" class="error-message" style="display: none;"></div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <input type="password" id="registerPassword" class="form-control" required minlength="6">
+                    <small class="form-text">Le mot de passe doit contenir au moins 6 caractères</small>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmation du mot de passe</label>
+                    <input type="password" id="confirmPassword" class="form-control" required>
+                </div>
+                <button type="submit" class="submit-btn register-submit">Créer mon compte</button>
+            </form>
+        </div>
+    </div>
 </body>
 
 </html>

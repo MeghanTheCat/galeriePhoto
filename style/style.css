@@ -59,6 +59,41 @@ header {
     background-color: #e5e5e5;
 }
 
+.add-album-btn,
+.login-btn,
+.register-btn {
+    background-color: #4a89dc;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    margin-left: 0.5rem;
+}
+
+.add-album-btn:hover,
+.login-btn:hover,
+.register-btn:hover {
+    background-color: #3b7dd8;
+}
+
+.register-btn {
+    background-color: #5cb85c;
+}
+
+.register-btn:hover {
+    background-color: #4cae4c;
+}
+
+.form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
 .user-section {
     display: flex;
     align-items: center;
