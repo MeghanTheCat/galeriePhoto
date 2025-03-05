@@ -26,11 +26,6 @@ async function checkAuth() {
         `;
         document.getElementById('logoutBtn').addEventListener('click', handleLogout);
 
-        // Montrer le bouton d'ajout de photos uniquement aux utilisateurs connectés
-        document.querySelectorAll('.add-photo-btn').forEach(btn => {
-            btn.style.display = 'inline-block';
-        });
-
         return true;
     } else {
         document.querySelector('.user-section').innerHTML = `
@@ -40,7 +35,7 @@ async function checkAuth() {
         document.getElementById('loginBtn').addEventListener('click', () => window.location.href = '../index.html');
         document.getElementById('registerBtn').addEventListener('click', () => window.location.href = '../index.html');
 
-        // Cacher le bouton d'ajout de photos pour les visiteurs non connectés
+        // Cacher les boutons d'ajout de photos pour les visiteurs non connectés
         document.querySelectorAll('.add-photo-btn').forEach(btn => {
             btn.style.display = 'none';
         });
@@ -96,8 +91,16 @@ async function loadAlbumDetails() {
         // Stocker l'album courant
         currentAlbum = album;
 
+        // Vérifier si l'utilisateur connecté est le propriétaire de l'album
+        const isAlbumOwner = currentUser && currentUser.id === album.created_by;
+
+        // Afficher ou masquer les boutons d'ajout de photos selon les droits
+        document.querySelectorAll('.add-photo-btn').forEach(btn => {
+            btn.style.display = isAlbumOwner ? 'inline-block' : 'none';
+        });
+
         // Mettre à jour le compteur de photos pour s'assurer qu'il est correct
-        if (currentUser) {
+        if (currentUser && isAlbumOwner) {
             await updatePhotoCount();
         }
 
@@ -125,6 +128,9 @@ async function loadPhotos() {
         loadingElement.style.display = 'block';
         photosGridElement.style.display = 'none';
 
+        // Vérifier si l'utilisateur est le propriétaire de l'album
+        const isAlbumOwner = currentUser && currentAlbum && currentUser.id === currentAlbum.created_by;
+
         // Récupérer les photos depuis Supabase
         const { data: photos, error } = await supabase
             .from('photos')
@@ -142,8 +148,8 @@ async function loadPhotos() {
             if (noPhotosElement) {
                 noPhotosElement.style.display = 'block';
 
-                // Adapter le message selon que l'utilisateur est connecté ou non
-                if (currentUser) {
+                // Adapter le message selon que l'utilisateur est le propriétaire ou non
+                if (isAlbumOwner) {
                     noPhotosElement.innerHTML = `
                         <p>Cet album ne contient pas encore de photos.</p>
                         <button class="add-photo-btn" id="addFirstPhotoBtn">Ajouter ma première photo</button>
@@ -407,7 +413,7 @@ async function addPhoto(event) {
     }
 }
 
-// Ouvrir la visionneuse de photo
+// Ouvrir la visionneuse de photo avec contrôle d'accès basé sur le propriétaire
 function openPhotoViewer(photo, publicUrl) {
     console.log("Ouverture de la photo:", photo);
     console.log("URL publique:", publicUrl);
@@ -462,9 +468,12 @@ function openPhotoViewer(photo, publicUrl) {
         }
     }
 
-    // Configuration du bouton de suppression - seulement pour utilisateurs connectés
+    // Vérification si l'utilisateur est le propriétaire de l'album
+    const isAlbumOwner = currentUser && currentAlbum && currentAlbum.created_by === currentUser.id;
+
+    // Configuration du bouton de suppression - uniquement pour le propriétaire de l'album
     if (deleteBtn) {
-        if (currentUser) {
+        if (isAlbumOwner) {
             deleteBtn.style.display = 'block';
             deleteBtn.onclick = () => deletePhoto(photo);
         } else {
@@ -490,8 +499,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = '../index.html';
     });
 
-    // Configuration des boutons uniquement si l'utilisateur est connecté
-    if (isLoggedIn) {
+    // Vérifier si l'utilisateur est le propriétaire de l'album
+    const isAlbumOwner = currentUser && currentAlbum && currentUser.id === currentAlbum.created_by;
+
+    // Configuration des boutons uniquement si l'utilisateur est connecté ET est le propriétaire
+    if (isLoggedIn && isAlbumOwner) {
         document.getElementById('addPhotoBtn').addEventListener('click', openPhotoModal);
         document.getElementById('closeModalBtn').addEventListener('click', closePhotoModal);
         document.getElementById('photoForm').addEventListener('submit', addPhoto);
