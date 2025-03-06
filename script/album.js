@@ -20,8 +20,19 @@ async function checkAuth() {
 
     if (user) {
         currentUser = user;
+
+        // Récupérer le pseudo depuis la table profiles
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('pseudo')
+            .eq('id', user.id)
+            .single();
+
+        // Récupérer le pseudo ou utiliser l'email comme fallback
+        const displayName = profile && profile.pseudo ? profile.pseudo : user.email;
+
         document.querySelector('.user-section').innerHTML = `
-            <span class="user-email">${user.email}</span>
+            <span class="user-name">${displayName}</span>
             <button id="logoutBtn" class="logout-btn">Déconnexion</button>
         `;
         document.getElementById('logoutBtn').addEventListener('click', handleLogout);
@@ -176,6 +187,9 @@ async function loadPhotos() {
         // Vider la grille existante
         photosGridElement.innerHTML = '';
 
+        // Ajouter la classe masonry-grid pour la mise en page moderne
+        photosGridElement.classList.add('masonry-grid');
+
         // Afficher un message s'il n'y a pas de photos
         if (!photos || photos.length === 0) {
             if (noPhotosElement) {
@@ -185,7 +199,12 @@ async function loadPhotos() {
                 if (isAlbumOwner) {
                     noPhotosElement.innerHTML = `
                         <p>Cet album ne contient pas encore de photos.</p>
-                        <button class="add-photo-btn" id="addFirstPhotoBtn">Ajouter ma première photo</button>
+                        <button class="add-photo-btn" id="addFirstPhotoBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                            Ajouter ma première photo
+                        </button>
                     `;
                     // Vérifier si le bouton existe avant d'ajouter l'écouteur d'événement
                     const addFirstPhotoBtn = document.getElementById('addFirstPhotoBtn');
@@ -204,11 +223,25 @@ async function loadPhotos() {
                 noPhotosElement.style.display = 'none';
             }
 
-            // Afficher chaque photo
-            photos.forEach(photo => {
+            // Ajouter l'icône "+" au bouton d'ajout
+            const addPhotoBtn = document.getElementById('addPhotoBtn');
+            if (addPhotoBtn) {
+                addPhotoBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    Ajouter des photos
+                `;
+            }
+
+            // Créer chaque carte de photo
+            photos.forEach((photo, index) => {
                 const photoCard = document.createElement('div');
                 photoCard.className = 'photo-card';
                 photoCard.dataset.id = photo.id;
+                photoCard.dataset.title = photo.title || '';
+
+                // La hauteur sera ajustée dynamiquement par setupMasonryGrid()
 
                 // Construire l'URL publique pour l'image
                 let publicUrl;
@@ -218,7 +251,6 @@ async function loadPhotos() {
                         .getPublicUrl(photo.storage_path);
 
                     publicUrl = data.publicUrl;
-                    console.log("URL de l'image:", publicUrl);
                 } catch (error) {
                     console.error("Erreur lors de la récupération de l'URL:", error);
                     // Fallback sur l'URL directe si disponible
@@ -226,26 +258,11 @@ async function loadPhotos() {
                 }
 
                 photoCard.innerHTML = `
-                <div class="photo-thumbnail">
-                    <img src="${publicUrl}" alt="${photo.title || 'Photo'}" 
-                        onerror="this.onerror=null; this.src='/path/to/fallback-image.jpg'; console.error('Impossible de charger:', this.alt);">
-                </div>
-            `;
-
-                const img = photoCard.querySelector('img');
-                img.onload = function () {
-                    // Calculer le ratio de taille pour conserver les proportions correctes
-                    const ratio = this.naturalWidth / this.naturalHeight;
-                    const maxSize = 180; // Taille maximale de base pour le cadre
-
-                    if (ratio >= 1) { // Image en paysage ou carrée
-                        photoCard.style.width = Math.min(maxSize, this.naturalWidth) + 'px';
-                        photoCard.style.height = (Math.min(maxSize, this.naturalWidth) / ratio) + 'px';
-                    } else { // Image en portrait
-                        photoCard.style.height = Math.min(maxSize, this.naturalHeight) + 'px';
-                        photoCard.style.width = (Math.min(maxSize, this.naturalHeight) * ratio) + 'px';
-                    }
-                };
+                    <div class="photo-thumbnail">
+                        <img src="${publicUrl}" alt="${photo.title || 'Photo'}" 
+                            onerror="this.onerror=null; this.src='/path/to/fallback-image.jpg'; console.error('Impossible de charger:', this.alt);">
+                    </div>
+                `;
 
                 // Ouvrir la photo en grand au clic
                 photoCard.addEventListener('click', () => openPhotoViewer(photo, publicUrl));
@@ -257,6 +274,14 @@ async function loadPhotos() {
         // Cacher l'indicateur de chargement et afficher la grille
         loadingElement.style.display = 'none';
         photosGridElement.style.display = 'grid';
+
+        // Appliquer le layout masonry après affichage
+        setTimeout(() => {
+            setupMasonryGrid();
+            addPhotoInfoOverlays();
+            animatePhotos();
+        }, 100);
+
     } catch (error) {
         console.error('Erreur lors du chargement des photos:', error);
         const loadingElement = document.getElementById('loading');
@@ -463,7 +488,6 @@ async function addPhoto(event) {
 // Ouvrir la visionneuse de photo avec contrôle d'accès basé sur le propriétaire
 function openPhotoViewer(photo, publicUrl) {
     console.log("Ouverture de la photo:", photo);
-    console.log("URL publique:", publicUrl);
 
     const modal = document.getElementById('viewPhotoModal');
     const photoImg = document.getElementById('currentPhoto');
@@ -484,7 +508,6 @@ function openPhotoViewer(photo, publicUrl) {
                 .getPublicUrl(photo.storage_path);
 
             publicUrl = data.publicUrl;
-            console.log("URL reconstruite:", publicUrl);
         } catch (error) {
             console.error("Erreur lors de la récupération de l'URL:", error);
             // Fallback sur l'URL directe si disponible
@@ -526,13 +549,16 @@ function openPhotoViewer(photo, publicUrl) {
     // Configuration du bouton de suppression - uniquement pour le propriétaire de l'album
     if (deleteBtn) {
         if (isAlbumOwner) {
-            deleteBtn.style.display = 'block';
+            deleteBtn.style.display = 'flex';
+            deleteBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                Supprimer
+            `;
             deleteBtn.onclick = () => deletePhoto(photo);
-            // S'assurer que le bouton est correctement positionné
-            deleteBtn.style.position = 'absolute';
-            deleteBtn.style.bottom = '15px';
-            deleteBtn.style.right = '15px';
-            deleteBtn.style.zIndex = '2';
         } else {
             deleteBtn.style.display = 'none';
         }
@@ -543,7 +569,24 @@ function openPhotoViewer(photo, publicUrl) {
 
 // Fermer la visionneuse de photo
 function closePhotoViewer() {
-    document.getElementById('viewPhotoModal').classList.remove('modal-visible');
+    const modal = document.getElementById('viewPhotoModal');
+    const photoViewer = modal.querySelector('.photo-viewer');
+
+    if (photoViewer) {
+        photoViewer.style.opacity = '0';
+        photoViewer.style.transform = 'scale(0.95)';
+
+        setTimeout(() => {
+            modal.classList.remove('modal-visible');
+            // Réinitialiser les styles pour la prochaine ouverture
+            setTimeout(() => {
+                photoViewer.style.opacity = '';
+                photoViewer.style.transform = '';
+            }, 300);
+        }, 300);
+    } else {
+        modal.classList.remove('modal-visible');
+    }
 }
 
 // Initialisation 

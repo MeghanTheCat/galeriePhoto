@@ -12,8 +12,19 @@ async function checkAuth() {
 
     if (user) {
         currentUser = user;
+
+        // Récupérer le pseudo depuis la table profiles
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('pseudo')
+            .eq('id', user.id)
+            .single();
+
+        // Récupérer le pseudo ou utiliser l'email comme fallback
+        const displayName = profile && profile.pseudo ? profile.pseudo : user.email;
+
         document.querySelector('.user-section').innerHTML = `
-            <span class="user-email">${user.email}</span>
+            <span class="user-name">${displayName}</span>
             <button id="logoutBtn" class="logout-btn">Déconnexion</button>
         `;
         document.getElementById('logoutBtn').addEventListener('click', handleLogout);
@@ -209,7 +220,17 @@ async function loadAlbums() {
         }
 
         // Masquer le bouton "Nouvel Album" si l'utilisateur n'est pas connecté
-        document.getElementById('openModalBtn').style.display = currentUser ? 'block' : 'none';
+        const addAlbumBtn = document.getElementById('openModalBtn');
+        if (addAlbumBtn) {
+            // Ajouter une icône au bouton
+            addAlbumBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                Nouvel Album
+            `;
+            addAlbumBtn.style.display = currentUser ? 'flex' : 'none';
+        }
 
         // 1. D'abord, récupérer tous les albums
         const { data: albums, error } = await supabase
@@ -258,7 +279,12 @@ async function loadAlbums() {
             if (currentUser) {
                 noAlbums.innerHTML = `
                     <p>Vous n'avez pas encore créé d'albums.</p>
-                    <button class="add-album-btn" id="createFirstAlbumBtn">Créer mon premier album</button>
+                    <button class="add-album-btn" id="createFirstAlbumBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        Créer mon premier album
+                    </button>
                 `;
                 albumsGrid.appendChild(noAlbums);
                 document.getElementById('createFirstAlbumBtn').addEventListener('click', openModal);
@@ -269,7 +295,7 @@ async function loadAlbums() {
                 albumsGrid.appendChild(noAlbums);
             }
         } else {
-            // Afficher chaque album
+            // Afficher chaque album avec le nouveau design
             albums.forEach(album => {
                 const albumCard = document.createElement('div');
                 albumCard.className = 'album-card';
@@ -279,6 +305,9 @@ async function loadAlbums() {
 
                 // Récupérer le pseudo du propriétaire
                 const ownerPseudo = album.ownerPseudo || 'Utilisateur inconnu';
+
+                // Formater la date de création
+                const creationDate = new Date(album.created_at).toLocaleDateString();
 
                 // Inclure le bouton de suppression uniquement si l'utilisateur est connecté
                 const deleteButton = currentUser && currentUser.id === album.created_by ?
@@ -293,7 +322,14 @@ async function loadAlbums() {
                     </div>
                     <div class="album-info">
                         <h3 class="album-title">${album.title}</h3>
-                        <p class="album-stats">${album.photo_count || 0} photos · Créé le ${new Date(album.created_at).toLocaleDateString()}</p>
+                        <p class="album-stats">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            ${album.photo_count || 0} photos · Créé le ${creationDate}
+                        </p>
                         <p class="album-owner">Par ${ownerPseudo}</p>
                     </div>
                 `;
@@ -506,19 +542,82 @@ function previewCover(event) {
 
 // Ouvrir modal pour créer un album
 function openModal() {
-    document.getElementById('albumModal').classList.add('modal-visible');
+    const modal = document.getElementById('albumModal');
+    modal.classList.add('modal-visible');
+
+    // Ajouter une animation d'entrée élégante
+    const modalContent = modal.querySelector('.modal-content');
+    if (modalContent) {
+        modalContent.style.transform = 'translateY(20px) scale(0.95)';
+        modalContent.style.opacity = '0';
+        modalContent.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1), opacity 0.4s ease';
+
+        setTimeout(() => {
+            modalContent.style.transform = 'translateY(0) scale(1)';
+            modalContent.style.opacity = '1';
+        }, 10);
+    }
 }
 
 // Fermer modal pour créer un album
 function closeModal() {
-    document.getElementById('albumModal').classList.remove('modal-visible');
-    document.getElementById('albumForm').reset();
+    const modal = document.getElementById('albumModal');
+    const modalContent = modal.querySelector('.modal-content');
+
+    if (modalContent) {
+        modalContent.style.transform = 'translateY(20px) scale(0.95)';
+        modalContent.style.opacity = '0';
+
+        // Attendre la fin de l'animation avant de fermer la modale
+        setTimeout(() => {
+            modal.classList.remove('modal-visible');
+            document.getElementById('albumForm').reset();
+
+            // Réinitialiser les styles pour la prochaine ouverture
+            setTimeout(() => {
+                modalContent.style.transform = '';
+                modalContent.style.opacity = '';
+            }, 300);
+        }, 300);
+    } else {
+        modal.classList.remove('modal-visible');
+        document.getElementById('albumForm').reset();
+    }
+}
+
+function enhanceAuthButtons() {
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+
+    if (loginBtn) {
+        loginBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10 17 15 12 10 7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+            </svg>
+            Connexion
+        `;
+    }
+
+    if (registerBtn) {
+        registerBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+            Inscription
+        `;
+    }
 }
 
 // Initialisation 
 document.addEventListener('DOMContentLoaded', async () => {
     await checkAuth();
     loadAlbums();
+    enhanceAuthButtons();
 
     // Configuration des gestionnaires d'événements
     document.getElementById('openModalBtn').addEventListener('click', openModal);
