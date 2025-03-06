@@ -1,0 +1,319 @@
+/* account.css - Styles pour la page de compte utilisateur */
+
+/* En-tête du compte */
+.account-header {
+    margin-bottom: 2rem;
+    background-color: white;
+    padding: 1.8rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.account-header h1 {
+    margin-bottom: 0.8rem;
+    font-size: 2rem;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.account-header p {
+    color: var(--text-medium);
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.back-btn {
+    background-color: white;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.back-btn:hover {
+    background-color: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Section de profil */
+.profile-section {
+    margin-bottom: 2rem;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+    flex-shrink: 0;
+}
+
+.profile-details {
+    flex: 1;
+}
+
+.profile-details h2 {
+    font-size: 1.6rem;
+    color: var(--text-dark);
+    margin-bottom: 0.3rem;
+}
+
+.profile-details p {
+    color: var(--text-medium);
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+}
+
+/* Statistiques du profil */
+.profile-stats {
+    display: flex;
+    gap: 1.5rem;
+    background-color: var(--gray-light);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+.stat-item {
+    flex: 1;
+    text-align: center;
+    background-color: white;
+    padding: 1.2rem 0.8rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.stat-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.3rem;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    color: var(--text-medium);
+}
+
+/* Sections du compte */
+.account-container {
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.account-section {
+    background-color: white;
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--gray-medium);
+}
+
+/* Formulaires */
+.account-form {
+    margin-top: 1.2rem;
+}
+
+.account-form .form-group {
+    margin-bottom: 1.2rem;
+}
+
+/* Notifications */
+.form-notice {
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.success-notice {
+    background-color: #c6f6d5;
+    color: #276749;
+    border-left: 3px solid #38a169;
+}
+
+.error-notice {
+    background-color: #fed7d7;
+    color: #c53030;
+    border-left: 3px solid #e53e3e;
+}
+
+/* Section de danger */
+.danger-section {
+    background-color: #fff5f5;
+    border: 1px solid #feb2b2;
+}
+
+.danger-text {
+    color: #c53030;
+    font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+}
+
+.danger-btn {
+    background-color: white;
+    color: #e53e3e;
+    border: 1px solid #e53e3e;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.danger-btn:hover {
+    background-color: #e53e3e;
+    color: white;
+}
+
+/* Modal de suppression de compte */
+.warning-text {
+    color: #c05621;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.cancel-btn {
+    background-color: var(--gray-light);
+    color: var(--text-medium);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.cancel-btn:hover {
+    background-color: var(--gray-dark);
+}
+
+.confirm-danger-btn {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.confirm-danger-btn:hover {
+    background-color: #c53030;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.account-section {
+    animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.account-section:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.account-section:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.account-section:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.account-section:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-details {
+        text-align: center;
+    }
+
+    .profile-avatar {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-stats {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .account-header {
+        padding: 1.2rem;
+    }
+
+    .account-section {
+        padding: 1.2rem;
+    }
+}
