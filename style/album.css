@@ -146,100 +146,6 @@
     font-size: 1.1rem;
 }
 
-/* Modal de visualisation de photo */
-.photo-viewer {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: var(--radius-md);
-    max-width: 90%;
-    max-height: 90vh;
-    overflow: auto;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.photo-viewer .close-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    color: var(--text-dark);
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    font-size: 1.2rem;
-}
-
-.photo-viewer .close-btn:hover {
-    background-color: white;
-    box-shadow: var(--shadow);
-}
-
-.photo-viewer img {
-    max-width: 100%;
-    max-height: 70vh;
-    object-fit: contain;
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow);
-}
-
-.photo-viewer h3 {
-    text-align: center;
-    color: var(--text-dark);
-    margin-top: 1rem;
-    font-weight: 700;
-    font-size: 1.2rem;
-}
-
-.photo-description {
-    text-align: center;
-    color: var(--text-medium);
-    margin-top: 0.5rem;
-    line-height: 1.6;
-    font-size: 0.95rem;
-    max-width: 90%;
-}
-
-.photo-actions {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    position: relative;
-    height: 40px;
-}
-
-.delete-btn {
-    background-color: #e53e3e;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-weight: 600;
-    transition: var(--transition);
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    position: absolute;
-    right: 0;
-}
-
-.delete-btn:hover {
-    background-color: #c53030;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-}
-
 /* Preview de téléchargement */
 .upload-preview {
     margin-top: 1.5rem;
@@ -285,23 +191,6 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Animation pour l'effet d'ouverture du visualiseur */
-@keyframes fadeInScale {
-    0% {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.modal-visible .photo-viewer {
-    animation: fadeInScale 0.3s ease-out forwards;
-}
-
 /* Style masonry amélioré */
 .masonry-grid {
     display: grid;
@@ -324,6 +213,153 @@
     grid-row: span 2;
 }
 
+/* Assombrir l'arrière-plan de la modal */
+#viewPhotoModal.modal-visible {
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+#viewPhotoModal {
+    transition: opacity 0.3s ease;
+}
+
+/* Style pour la visionneuse de photo en plein écran */
+.photo-viewer {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    box-shadow: none;
+}
+
+/* Conteneur pour l'image et le titre */
+.photo-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 90%;
+    max-height: 80vh;
+    position: relative;
+}
+
+/* Style de l'image */
+.photo-viewer img {
+    max-width: 90%;
+    max-height: 75vh;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    margin-top: 50px;
+    /* Espace pour le titre au-dessus */
+}
+
+/* Titre au-dessus de la photo */
+.photo-viewer h3 {
+    position: relative;
+    top: 0;
+    text-align: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    margin: 0 0 15px 0;
+    z-index: 5;
+    background: transparent;
+}
+
+/* Masquer la description */
+.photo-viewer .photo-description {
+    display: none;
+}
+
+/* Bouton de fermeture collé en haut à droite */
+.photo-viewer .close-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    font-size: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.photo-viewer .close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Bouton supprimer collé en bas à droite */
+.photo-actions {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    margin: 0;
+    height: auto;
+    width: auto;
+    z-index: 10;
+}
+
+.delete-btn {
+    background-color: rgba(229, 62, 62, 0.8);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: static;
+    width: 45px;
+    height: 45px;
+}
+
+.delete-btn:hover {
+    background-color: #e53e3e;
+}
+
+.delete-btn svg {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+}
+
+.delete-btn span {
+    display: none;
+}
+
+/* Animation simplifiée pour l'ouverture du visualiseur */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-visible .photo-viewer {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
 /* Responsive pour la page d'album */
 @media (max-width: 768px) {
 
@@ -337,18 +373,31 @@
         padding: 1.5rem;
     }
 
-    .photo-viewer {
-        width: 95%;
-        padding: 1rem;
+    .photo-viewer h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
     }
 
     .photo-viewer img {
-        max-height: 60vh;
+        max-width: 95%;
+        max-height: 70vh;
     }
 
-    .photo-viewer h3,
-    .photo-description {
-        max-width: 100%;
+    .photo-viewer .close-btn {
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+    }
+
+    .photo-actions {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .delete-btn {
+        width: 40px;
+        height: 40px;
     }
 }
 
@@ -362,15 +411,6 @@
 
     .album-header h1 {
         font-size: 1.5rem;
-    }
-
-    .photo-viewer {
-        width: 95%;
-        padding: 1rem;
-    }
-
-    .photo-viewer img {
-        max-height: 55vh;
     }
 
     /* Simplifier la grille sur mobile */

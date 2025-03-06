@@ -16,7 +16,9 @@
 <body>
     <!-- En-tête de la page -->
     <header>
-        <div class="logo">Ma Galerie Photo</div>
+        <div class="logo">
+            <a href="../index.html">Ma Galerie Photo</a>
+        </div>
         <div class="user-section">
             <!-- Sera rempli dynamiquement via JavaScript -->
         </div>
@@ -78,15 +80,30 @@
     <div class="modal-overlay" id="viewPhotoModal">
         <div class="modal-content photo-viewer">
             <button class="close-btn" id="closeViewModalBtn">&times;</button>
-            <img id="currentPhoto" src="" alt="">
-            <h3 id="photoViewTitle"></h3>
+
+            <div class="photo-content">
+                <h3 id="photoViewTitle"></h3>
+                <img id="currentPhoto" src="" alt="">
+            </div>
+
             <p id="photoViewDescription" class="photo-description"></p>
+
             <!-- Ajouter un indicateur d'erreur de chargement -->
             <p id="photoLoadError" class="error-message" style="display: none;">
                 Impossible de charger l'image
             </p>
+
             <div class="photo-actions">
-                <button id="deletePhotoBtn" class="delete-btn">Supprimer cette photo</button>
+                <button id="deletePhotoBtn" class="delete-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2">
+                        </path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                    <span>Supprimer</span>
+                </button>
             </div>
         </div>
     </div>

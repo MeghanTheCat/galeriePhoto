@@ -32,16 +32,40 @@ async function checkAuth() {
         const displayName = profile && profile.pseudo ? profile.pseudo : user.email;
 
         document.querySelector('.user-section').innerHTML = `
-            <span class="user-name">${displayName}</span>
-            <button id="logoutBtn" class="logout-btn">Déconnexion</button>
+            <div class="user-info">
+                <span class="user-avatar">${displayName.charAt(0).toUpperCase()}</span>
+                <span class="user-name">${displayName}</span>
+                <button id="logoutBtn" class="logout-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
         `;
         document.getElementById('logoutBtn').addEventListener('click', handleLogout);
 
         return true;
     } else {
         document.querySelector('.user-section').innerHTML = `
-            <button id="loginBtn" class="login-btn">Connexion</button>
-            <button id="registerBtn" class="register-btn">Inscription</button>
+            <button id="loginBtn" class="login-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <polyline points="10 17 15 12 10 7"></polyline>
+                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+                Connexion
+            </button>
+            <button id="registerBtn" class="register-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+                Inscription
+            </button>
         `;
         document.getElementById('loginBtn').addEventListener('click', () => window.location.href = '../index.html');
         document.getElementById('registerBtn').addEventListener('click', () => window.location.href = '../index.html');
@@ -524,23 +548,22 @@ function openPhotoViewer(photo, publicUrl) {
     photoImg.src = publicUrl;
     photoImg.alt = photo.title || 'Photo';
 
+    // Afficher le titre (combiné avec la description si elle existe)
     if (photoTitle) {
-        if (photo.title) {
-            photoTitle.textContent = photo.title;
-            photoTitle.style.display = 'block';
-        } else {
-            photoTitle.style.display = 'none';
+        let titleText = photo.title || '';
+
+        // Si une description existe, l'ajouter après le titre
+        if (photo.description) {
+            titleText = titleText ? `${titleText}` : '';
         }
+
+        photoTitle.textContent = titleText;
+        photoTitle.style.display = titleText ? 'block' : 'none';
     }
 
-    // Afficher la description si elle existe
+    // Masquer la description car elle est maintenant intégrée au titre
     if (photoDescription) {
-        if (photo.description) {
-            photoDescription.textContent = photo.description;
-            photoDescription.style.display = 'block';
-        } else {
-            photoDescription.style.display = 'none';
-        }
+        photoDescription.style.display = 'none';
     }
 
     // Vérification si l'utilisateur est le propriétaire de l'album
@@ -551,12 +574,12 @@ function openPhotoViewer(photo, publicUrl) {
         if (isAlbumOwner) {
             deleteBtn.style.display = 'flex';
             deleteBtn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
                     <line x1="10" y1="11" x2="10" y2="17"></line>
                     <line x1="14" y1="11" x2="14" y2="17"></line>
                 </svg>
-                Supprimer
+                <span>Supprimer</span>
             `;
             deleteBtn.onclick = () => deletePhoto(photo);
         } else {
@@ -570,23 +593,17 @@ function openPhotoViewer(photo, publicUrl) {
 // Fermer la visionneuse de photo
 function closePhotoViewer() {
     const modal = document.getElementById('viewPhotoModal');
-    const photoViewer = modal.querySelector('.photo-viewer');
 
-    if (photoViewer) {
-        photoViewer.style.opacity = '0';
-        photoViewer.style.transform = 'scale(0.95)';
+    // Réduire l'opacité de la modal pour une transition douce
+    modal.style.opacity = '0';
 
-        setTimeout(() => {
-            modal.classList.remove('modal-visible');
-            // Réinitialiser les styles pour la prochaine ouverture
-            setTimeout(() => {
-                photoViewer.style.opacity = '';
-                photoViewer.style.transform = '';
-            }, 300);
-        }, 300);
-    } else {
+    setTimeout(() => {
         modal.classList.remove('modal-visible');
-    }
+        // Réinitialiser l'opacité pour la prochaine ouverture
+        setTimeout(() => {
+            modal.style.opacity = '';
+        }, 300);
+    }, 300);
 }
 
 // Initialisation 
